@@ -1,26 +1,70 @@
 {
   "name": "questboard",
-  "private": true,
   "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri"
-  },
+  "private": true,
   "dependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2"
+    "@reduxjs/toolkit": "^2.11.2",
+    "cra-template-overwolf-typescript-redux": "3.2.1",
+    "i18next": "^23.16.8",
+    "overwolf-hooks": "^4.1.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^14.1.3",
+    "react-redux": "^9.2.0",
+    "react-scripts": "^5.0.1",
+    "web-vitals": "^3.5.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "start-remote-server": "redux-devtools --hostname=localhost --port=8081 --open",
+    "format": "prettier --write src/**/*.ts{,x}",
+    "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
+    "pre-build": "node scripts/update-manifest.js",
+    "post-build": "node scripts/create-production-overwolf-build",
+    "package-overwolf": "cd build && tar -acf ../package.v$npm_package_version.zip * && cd -",
+    "build:overwolf": "npm run pre-build && npm run build && npm run post-build && npm run package-overwolf"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "devDependencies": {
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.6.0",
-    "typescript": "~5.8.3",
-    "vite": "^7.0.4",
-    "@tauri-apps/cli": "^2"
+    "@overwolf/types": "^3.24.10",
+    "@redux-devtools/cli": "^4.0.4",
+    "@redux-devtools/remote": "^0.9.5",
+    "@semantic-release/git": "^10.0.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^14.3.1",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.19.41",
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
+    "@types/react-redux": "^7.1.34",
+    "@types/remote-redux-devtools": "^0.5.8",
+    "prettier": "^3.8.3",
+    "semantic-release": "^22.0.12",
+    "typescript": "^5.9.3"
+  },
+  "homepage": ".",
+  "overrides": {
+    "typescript": "^5.3.3"
   }
 }
