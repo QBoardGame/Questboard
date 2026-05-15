@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { DesktopHeader } from "./DesktopHeader";
 import { Overview } from "features/overview";
 import { useAdRemoval } from "features/monetization";
-import "./styles/Screen.css";
+import styles from "./styles/Screen.module.css";
 import { PremiumContent } from "./PremiumContent";
 import { FreeContent } from "./FreeContent";
 
@@ -14,25 +14,25 @@ const Screen = () => {
   const { isLoading, isSubscribed } = useAdRemoval();
 
   return (
-    <div className='desktop'>
+    <div className={styles.desktop}>
       <DesktopHeader />
-      <div className={"desktop__container"}>
-        <header className={"desktop__header desktop__fit"}>
+      <div className={styles.desktop__container}>
+        <header className={`${styles.desktop__header} ${styles.desktop__fit}`}>
           <Title color='white'>
             Current Locale: <b>{t("common.language")} 🌐</b>
             <br />
             {t("components.desktop.header")}
           </Title>
         </header>
-        <main className={"desktop__main"}>
+        <main className={styles.desktop__main}>
           <Title color='white'>{t("components.desktop.main")}</Title>
           <Overview />
         </main>
-        <aside className={"desktop__aside"}>
+        <aside className={styles.desktop__aside}>
           <Title color='white'>{t("components.desktop.aside")}</Title>
           {isSubscribed || isLoading ? <PremiumContent /> : <FreeContent />}
         </aside>
-        <footer className={"desktop__footer desktop__fit"}>
+        <footer className={`${styles.desktop__footer} ${styles.desktop__fit}`}>
           <Title color='white'>{t("components.desktop.footer")}</Title>
         </footer>
       </div>

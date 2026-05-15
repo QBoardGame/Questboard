@@ -2,7 +2,7 @@ import { RootReducer } from "app/shared/rootReducer";
 import { Feed } from "components/Feed";
 import { Title } from "components/Title/Title";
 import { useSelector } from "react-redux";
-import "./styles/Screen.css";
+import styles from "./styles/Screen.module.css";
 
 const Screen = () => {
   const { events, infos } = useSelector(
@@ -10,7 +10,7 @@ const Screen = () => {
   );
 
   return (
-    <div className="ingame">
+    <div className={styles.ingame}>
       <Title color="white">InGame Screen</Title>
       <Feed
         title="Events"
