@@ -1,41 +1,41 @@
-import { Title } from "components/Title/Title";
-import { useTranslation } from "react-i18next";
 import { DesktopHeader } from "./DesktopHeader";
-import { Overview } from "features/overview";
-import { useAdRemoval } from "features/monetization";
+import { useDesktopAuth } from "./auth/useDesktopAuth";
+import { LoginPage } from "./auth/LoginPage";
+import { SignupPage } from "./auth/SignupPage";
+import { Dashboard } from "./Dashboard";
 import styles from "./styles/Screen.module.css";
-import { PremiumContent } from "./PremiumContent";
-import { FreeContent } from "./FreeContent";
 
-//avoid the use of static text, use i18n instead, each language has its own text, and the text is stored in the
-//locales folder in the project root
 const Screen = () => {
-  const { t } = useTranslation();
-  const { isLoading, isSubscribed } = useAdRemoval();
+  const {
+    isAuthenticated,
+    mode,
+    signInWithGoogle,
+    loginWithCredentials,
+    registerWithCredentials,
+    switchMode,
+    logout,
+  } = useDesktopAuth();
+
+  const content = isAuthenticated ? (
+    <Dashboard onLogout={logout} />
+  ) : mode === "login" ? (
+    <LoginPage
+      onGoogleLogin={signInWithGoogle}
+      onSwitchMode={switchMode}
+      onLogin={loginWithCredentials}
+    />
+  ) : (
+    <SignupPage
+      onGoogleSignup={signInWithGoogle}
+      onSwitchMode={switchMode}
+      onRegister={registerWithCredentials}
+    />
+  );
 
   return (
     <div className={styles.desktop}>
       <DesktopHeader />
-      <div className={styles.desktop__container}>
-        <header className={`${styles.desktop__header} ${styles.desktop__fit}`}>
-          <Title color='white'>
-            Current Locale: <b>{t("common.language")} 🌐</b>
-            <br />
-            {t("components.desktop.header")}
-          </Title>
-        </header>
-        <main className={styles.desktop__main}>
-          <Title color='white'>{t("components.desktop.main")}</Title>
-          <Overview />
-        </main>
-        <aside className={styles.desktop__aside}>
-          <Title color='white'>{t("components.desktop.aside")}</Title>
-          {isSubscribed || isLoading ? <PremiumContent /> : <FreeContent />}
-        </aside>
-        <footer className={`${styles.desktop__footer} ${styles.desktop__fit}`}>
-          <Title color='white'>{t("components.desktop.footer")}</Title>
-        </footer>
-      </div>
+      <div className={styles.desktop__container}>{content}</div>
     </div>
   );
 };

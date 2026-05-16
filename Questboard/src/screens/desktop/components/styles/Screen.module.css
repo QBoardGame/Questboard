@@ -13,54 +13,237 @@
 
 .desktop {
   background-color: var(--background-color);
+  min-height: 100vh;
 }
 
 .desktop__container {
+  min-height: calc(100vh - 84px);
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.authCard,
+.dashboard {
+  width: 100%;
+  max-width: 1180px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  padding: 32px;
+  color: var(--primary-color-text);
+}
+
+.authHeader {
+  margin-bottom: 24px;
+}
+
+.authText,
+.dashboardIntro {
+  margin-top: 12px;
+  line-height: 1.65;
+  color: var(--neutral-6);
+}
+
+.googleButton,
+.logoutButton,
+.linkButton {
+  border: none;
+  cursor: pointer;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.googleButton {
+  width: 100%;
+  background-color: #4285f4;
+  color: white;
+  padding: 16px 20px;
+  margin-top: 12px;
+  transition: filter 180ms ease;
+}
+
+.googleButton:hover {
+  filter: brightness(1.05);
+}
+
+.authForm {
   display: grid;
-  grid-template-columns: 3fr 2fr;
-  grid-template-rows: 15vh 65vh 15vh;
-  grid-template-areas:
-    "header header"
-    "main aside"
-    "footer footer";
+  gap: 16px;
 }
 
-  .desktop__fit {
+.authField {
+  display: grid;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: var(--primary-color-text);
+}
+
+.authInput {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-size: 1rem;
+  color: var(--primary-color-text);
+  background: white;
+}
+
+.authInput:focus {
+  outline: none;
+  border-color: #4f8cff;
+  box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.12);
+}
+
+.primaryButton {
+  width: 100%;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 16px 20px;
+  margin-top: 4px;
+  border-radius: 999px;
+  font-weight: 700;
+  transition: filter 180ms ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.divider {
+  margin: 24px 0 12px;
+  text-align: center;
+  color: var(--neutral-6);
+  font-size: 0.9rem;
+}
+
+.errorMessage {
+  color: #c42f2f;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.authFooter {
+  margin-top: 24px;
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.desktop__header {
+.linkButton {
+  background: transparent;
+  color: var(--primary-color-text);
+  text-decoration: underline;
+  padding: 0;
+}
+
+.dashboardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.logoutButton {
+  background-color: var(--neutral-1);
+  color: var(--primary-color-text);
+  padding: 14px 22px;
+}
+
+.dashboardLayout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+}
+
+.dashboardNav {
+  position: sticky;
+  top: 32px;
+  align-self: start;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+}
+
+.navTitle {
+  margin-bottom: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--neutral-4);
+}
+
+.navList {
+  display: grid;
+  gap: 12px;
+}
+
+.navButton {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  background: transparent;
+  color: var(--primary-color-text);
+  padding: 14px 18px;
+  font-weight: 700;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+  cursor: pointer;
+}
+
+.navButton:hover {
+  background: rgba(25, 118, 210, 0.08);
+  border-color: rgba(25, 118, 210, 0.24);
+}
+
+.navButtonActive {
+  background: var(--primary-color);
+  color: white;
+  border-color: transparent;
+}
+
+.dashboardContent {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 24px;
+  padding: 32px;
+}
+
+.dashboardGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-bottom: 32px;
+}
+
+.dashboardPanel {
+  padding: 24px;
+  border-radius: 20px;
   background: var(--neutral-1);
-  grid-area: header;
+  color: var(--primary-color-text);
 }
 
-.desktop__main {
-  background: var(--neutral-2);
-  grid-area: main;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+.overviewSection {
+  width: 100%;
 }
 
-.desktop__aside {
-  background: var(--neutral-3);
-  grid-area: aside;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-}
+@media (max-width: 900px) {
+  .dashboardLayout {
+    grid-template-columns: 1fr;
+  }
 
-.desktop__footer {
-  background: var(--background-color);
-  grid-area: footer;
+  .dashboardNav {
+    position: relative;
+    top: auto;
+  }
 }

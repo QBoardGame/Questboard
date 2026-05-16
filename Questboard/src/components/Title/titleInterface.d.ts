@@ -1,3 +1,3 @@
 interface TitleProps {
-  color: "red" | "blue" | "green" | "white";
+  color: "red" | "blue" | "green" | "white" | "black";
 }

@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --neutral-1: #262626;
   --neutral-2: #404040;
