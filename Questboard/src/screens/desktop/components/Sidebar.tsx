@@ -60,9 +60,9 @@ export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) =
 
   return (
     <nav className="sidebar" aria-label="Main sidebar">
-      <ul className="sidebar__list">
+      <ul className="sidebar_list">
         {items.map((it) => (
-          <li key={it.key} className={`sidebar__item ${active === it.key ? "active" : ""}`}>
+          <li key={it.key} className={`sidebar_item ${active === it.key ? "active" : ""}`}>
             <button
               type="button"
               className="sidebar__button"
@@ -76,12 +76,12 @@ export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) =
         ))}
       </ul>
 
-      <div className="sidebar__footer">
+      <div className="sidebar_footer">
         <div className="profile" tabIndex={0}>
           {avatar ? (
-            <img className="profile__avatar" src={avatar} alt={username} />
+            <img className="profile_avatar" src={avatar} alt={username} />
           ) : (
-            <div className="profile__avatar profile__placeholder">{username.charAt(0).toUpperCase()}</div>
+            <div className="profile_avatar profile_placeholder">{username.charAt(0).toUpperCase()}</div>
           )}
           <div className="profile__meta">
             <div className="profile__name">{username}</div>

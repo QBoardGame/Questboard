@@ -48,6 +48,16 @@ export const Dashboard = ({ onLogout }: DashboardProps) => {
         <Sidebar active={activeScreen} onChange={(k) => setActiveScreen(k)} onLogout={onLogout} />
 
         <main className={styles.dashboardContent}>{activeContent}</main>
+
+        <aside className={styles.adsColumn} aria-hidden="true">
+          {/* Placeholder for ads / promotional content */}
+          <div style={{height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <div style={{textAlign: 'center', color: 'var(--neutral-6)'}}>
+              <div style={{fontWeight: 700, marginBottom: 8}}>Sponsored</div>
+              <div style={{fontSize: 12}}>Ad space reserved (col-4)</div>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
