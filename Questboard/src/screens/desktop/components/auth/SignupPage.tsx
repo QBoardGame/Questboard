@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Title } from "components/Title/Title";
+import "./LoginPage.css";
 
 type SignupPageProps = {
   onGoogleSignup: () => void;
@@ -41,83 +41,104 @@ export const SignupPage = ({
   };
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-[32px] bg-white/95 p-10 shadow-[0_20px_60px_rgba(0,0,0,0.15)] backdrop-blur-sm">
-      <header className="mb-8">
-        <Title color="black">Create your account</Title>
-        <p className="mt-4 text-sm leading-7 text-slate-600">
-          Register with a username, email, and password, or continue with Google
-          to access Questboard.
-        </p>
-      </header>
+    <div className="login-container">
+      <div className="login-card">
+        <header className="login-header">
+          <h1>Create your account</h1>
+          <p className="login-subtitle">
+            Register with your details or continue with Google to get started.
+          </p>
+        </header>
 
-      <form className="space-y-5" onSubmit={handleSubmit}>
-        <label className="block text-sm font-semibold text-slate-900">
-          Username
-          <input
-            type="text"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            required
-            className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-            placeholder="Your username"
-          />
-        </label>
+        <form className="login-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="form-label" htmlFor="username">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              required
+              className="form-input"
+              placeholder="Choose your username"
+            />
+          </div>
 
-        <label className="block text-sm font-semibold text-slate-900">
-          Email
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-            className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-            placeholder="you@example.com"
-          />
-        </label>
+          <div className="form-group">
+            <label className="form-label" htmlFor="email">
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              className="form-input"
+              placeholder="you@example.com"
+            />
+          </div>
 
-        <label className="block text-sm font-semibold text-slate-900">
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-            className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-            placeholder="••••••••"
-          />
-        </label>
+          <div className="form-group">
+            <label className="form-label" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              className="form-input"
+              placeholder="••••••••"
+            />
+          </div>
 
-        {error && <p className="text-sm text-rose-600">{error}</p>}
+          {error && <div className="form-error">{error}</div>}
 
-        <button
-          type="submit"
-          className="w-full rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white shadow transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Creating account…" : "Create account"}
+          <button
+            type="submit"
+            className="submit-button"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Creating account…" : "Create account"}
+          </button>
+        </form>
+
+        <div className="divider-container">
+          <div className="divider-line" />
+          <span className="divider-text">Or</span>
+          <div className="divider-line" />
+        </div>
+
+        <button className="google-button" onClick={onGoogleSignup}>
+          <svg
+            className="google-icon"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+          </svg>
+          Continue with Google
         </button>
-      </form>
 
-      <div className="mt-6 flex items-center justify-center text-sm text-slate-500">
-        <span className="border-t border-slate-200 px-3">OR</span>
-      </div>
-
-      <button
-        className="mt-6 w-full rounded-full bg-[#4285f4] px-5 py-3 text-sm font-semibold text-white shadow transition hover:bg-blue-600"
-        onClick={onGoogleSignup}
-      >
-        Continue with Google
-      </button>
-
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-700">
-        <span>Already have an account?</span>
-        <button
-          type="button"
-          className="font-semibold text-sky-600 hover:text-sky-700"
-          onClick={onSwitchMode}
-        >
-          Go to Sign in
-        </button>
+        <footer className="login-footer">
+          <p className="footer-text">
+            Already have an account?
+            <button
+              type="button"
+              className="signup-link"
+              onClick={onSwitchMode}
+            >
+              Sign in
+            </button>
+          </p>
+        </footer>
       </div>
     </div>
   );

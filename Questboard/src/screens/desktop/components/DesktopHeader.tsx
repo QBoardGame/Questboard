@@ -48,6 +48,9 @@ export const DesktopHeader = () => {
         🐺 ICON - OVERWOLF-MODERN-REACT-BOILERPLATE-V4
       </h1>
       <div className={"header__controls__group"}>
+        <button className={"upgrade-button"} onClick={() => window.location.href = "/upgrade"}>
+          Upgrade to Premium
+        </button>
         <button
           className={classNames("header__icon header__control header__discord")}
           onClick={handleDiscordClick}

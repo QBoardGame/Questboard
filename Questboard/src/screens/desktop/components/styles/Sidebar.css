@@ -1,0 +1,144 @@
+.sidebar {
+  width: 72px;
+  height: calc(100vh - 5vh - 48px); /* fit into available viewport space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 24px; /* remain visible when content scrolls */
+}
+
+.sidebar__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0;
+  margin: 0;
+  list-style: none;
+}
+
+.sidebar__item {
+  width: 100%;
+}
+
+.sidebar__button {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--primary-color-text);
+  cursor: pointer;
+  position: relative;
+}
+
+.sidebar__button:hover,
+.sidebar__item.active .sidebar__button {
+  background: rgba(255,255,255,0.06);
+}
+
+.sidebar__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar__label {
+  position: absolute;
+  left: 72px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  border-radius: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  pointer-events: none;
+  font-size: 0.9rem;
+}
+
+.sidebar__button:hover .sidebar__label,
+.sidebar__item.active .sidebar__label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sidebar__footer {
+  width: 100%;
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.profile {
+  width: 56px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+}
+
+.profile__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.profile__placeholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+  color: var(--primary-color-text);
+  font-weight: 700;
+}
+
+.profile__meta {
+  display: none;
+}
+
+.profile__menu {
+  position: absolute;
+  bottom: 68px;
+  left: 72px;
+  background: rgba(0,0,0,0.85);
+  color: white;
+  border-radius: 8px;
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  min-width: 160px;
+}
+
+.profile__menu-item {
+  background: transparent;
+  color: white;
+  border: none;
+  text-align: left;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.profile:hover .profile__menu,
+.profile:focus-within .profile__menu {
+  display: flex;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+.sidebar__list {
+  margin-top: 8px;
+}
