@@ -1,27 +1,15 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { HomeContent } from "./HomeContent";
 import { GamesContent } from "./GamesContent";
 import { PremiumContent } from "./PremiumContent";
 import { ProfileContent } from "./ProfileContent";
-import { Title } from "components/Title/Title";
 import styles from "./styles/Screen.module.css";
-import Sidebar from "./Sidebar";
 
 type DashboardProps = {
-  onLogout: () => void;
+  activeScreen: "home" | "games" | "premium" | "profile";
 };
 
-type ScreenKey = "home" | "games" | "premium" | "profile";
-
-const navigationItems: Array<{ key: ScreenKey; label: string }> = [
-  { key: "home", label: "Home" },
-  { key: "games", label: "Games" },
-  { key: "premium", label: "Premium" },
-  { key: "profile", label: "Profile" },
-];
-
-export const Dashboard = ({ onLogout }: DashboardProps) => {
-  const [activeScreen, setActiveScreen] = useState<ScreenKey>("home");
+export const Dashboard = ({ activeScreen }: DashboardProps) => {
 
   const activeContent = useMemo(() => {
     switch (activeScreen) {
@@ -38,15 +26,7 @@ export const Dashboard = ({ onLogout }: DashboardProps) => {
 
   return (
     <div className={styles.dashboard}>
-      <div className={styles.dashboardHeader}>
-        <button className={styles.logoutButton} onClick={onLogout}>
-          Log out
-        </button>
-      </div>
-
       <div className={styles.dashboardLayout}>
-        <Sidebar active={activeScreen} onChange={(k) => setActiveScreen(k)} onLogout={onLogout} />
-
         <main className={styles.dashboardContent}>{activeContent}</main>
 
         <aside className={styles.adsColumn} aria-hidden="true">

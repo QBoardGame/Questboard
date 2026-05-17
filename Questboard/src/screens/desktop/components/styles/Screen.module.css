@@ -12,23 +12,36 @@
 }
 
 .desktop {
-  background-color: var(--background-color);
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.34), rgba(15, 23, 42, 0.34)),
+    url("/public/images/login_img.webp");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* keep image static while content scrolls */
   min-height: 100vh;
 }
 
-.desktop__container {
+.desktop__containerAuth {
   width: 100%;
+  min-height: 100vh;
+  padding-top: 56px;
+  box-sizing: border-box;
+}
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.desktop__containerDashboard {
+  width: 100%;
+  min-height: calc(100vh - 56px);
+  padding-top: 56px;
+  padding-left: 104px; /* reserve space for fixed sidebar + gap */
+  padding-right: 16px;
+  box-sizing: border-box;
 }
 
 .authCard,
 .dashboard {
   width: 100%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  padding: 32px;
   color: var(--primary-color-text);
 }
 
@@ -155,10 +168,8 @@
 
 .dashboardLayout {
   display: grid;
-  grid-template-columns: 72px 2fr 1fr; /* sidebar | main (col-8) | ads (col-4) */
+  grid-template-columns: 2fr 1fr; /* main (col-8) | ads (col-4) */
   gap: 24px;
-  height: calc(100vh - 5vh - 48px); /* fit within viewport minus header and paddings */
-  overflow: hidden; /* prevent page scrolling */
 }
 
 .dashboardNav {
@@ -170,8 +181,6 @@
   background: rgba(255,255,255,0.02);
   border-radius: 16px;
   padding: 16px;
-  height: 100%;
-  overflow: hidden;
 }
 
 .navTitle {
@@ -212,12 +221,25 @@
   border-color: transparent;
 }
 
-.dashboardContent {
-  background: var(--neutral-2);
+.glass-card {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
   border-radius: 24px;
   padding: 24px;
-  height: 100%;
-  overflow: hidden; /* ensure no scrolling inside */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+.dashboardContent {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-radius: 20px;
+  padding: 24px;
+  margin: 16px 0px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
 }
 
 .dashboardGrid {
@@ -239,6 +261,10 @@
 }
 
 @media (max-width: 900px) {
+  .desktop__containerDashboard {
+    padding-left: 16px;
+  }
+
   .dashboardLayout {
     grid-template-columns: 1fr;
   }

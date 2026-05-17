@@ -3,8 +3,7 @@ import { Overview } from "features/overview";
 export const HomeContent = () => (
   <div className="space-y-8">
     <section className="grid gap-5 lg:grid-cols-3">
-      <div className="rounded-3xl bg-white p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
-        <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Welcome back</p>
+      <div className="rounded-3xl bg-white p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">    
         <h2 className="mt-4 text-2xl font-semibold text-slate-900">Questboard dashboard</h2>
         <p className="mt-3 text-sm leading-6 text-slate-600">
           Monitor your sessions, check progress, and jump into the games that matter most.

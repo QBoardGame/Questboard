@@ -65,12 +65,12 @@ export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) =
           <li key={it.key} className={`sidebar_item ${active === it.key ? "active" : ""}`}>
             <button
               type="button"
-              className="sidebar__button"
+              className="sidebar_button"
               aria-label={it.aria}
               onClick={() => handleClick(it.key)}
             >
-              <span className="sidebar__icon">{it.icon}</span>
-              <span className="sidebar__label">{it.label}</span>
+              <span className="sidebar_icon">{it.icon}</span>
+              <span className="sidebar_label">{it.label}</span>
             </button>
           </li>
         ))}
@@ -83,18 +83,18 @@ export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) =
           ) : (
             <div className="profile_avatar profile_placeholder">{username.charAt(0).toUpperCase()}</div>
           )}
-          <div className="profile__meta">
-            <div className="profile__name">{username}</div>
+          <div className="profile_meta">
+            <div className="profile_name">{username}</div>
           </div>
 
-          <div className="profile__menu" role="menu">
-            <button type="button" className="profile__menu-item" onClick={() => handleClick("profile")}>
+          <div className="profile_menu" role="menu">
+            <button type="button" className="profile_menu-item" onClick={() => handleClick("profile")}>
               Go to profile
             </button>
-            <button type="button" className="profile__menu-item" onClick={() => window.location.href = "overwolf://settings"}>
+            <button type="button" className="profile_menu-item" onClick={() => window.location.href = "overwolf://settings"}>
               Settings
             </button>
-            <button type="button" className="profile__menu-item" onClick={() => onLogout && onLogout()}>
+            <button type="button" className="profile_menu-item" onClick={() => onLogout && onLogout()}>
               Log out
             </button>
           </div>
