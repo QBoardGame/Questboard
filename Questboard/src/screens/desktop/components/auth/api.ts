@@ -1,54 +1,62 @@
-import { log } from "lib/log";
-
-const AUTH_API_BASE = "http://localhost:8080/api/auth";
-const JSON_HEADERS = {
-  "Content-Type": "application/json",
-};
-
-async function postAuth(endpoint: string, body: Record<string, unknown>) {
-  const url = `${AUTH_API_BASE}${endpoint}`;
-  log(`Sending auth request to ${url}`, "src/screens/desktop/components/auth/api.ts", "postAuth");
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: JSON_HEADERS,
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    const errorDetail = await response.text();
-    throw new Error(errorDetail || "Authentication request failed");
-  }
-
-  const contentType = response.headers.get("content-type");
-  if (contentType?.includes("application/json")) {
-    return response.json();
-  }
-
-  return null;
-}
+import { apiClient } from "lib/apiClient";
 
 export type LoginCredentials = {
   email: string;
   password: string;
+  authType?: string;
 };
 
 export type SignupCredentials = {
   username: string;
   email: string;
   password: string;
+  authType?: string;
 };
 
-export async function loginWithCredentials(credentials: LoginCredentials) {
-  return postAuth("/login", {
+/**
+ * Backend auth response structure
+ * User data can be extracted from JWT tokens
+ */
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  email: string;
+  provider: string;
+  message: string;
+}
+
+/**
+ * Login with email and password
+ * Returns tokens and basic user info
+ */
+export async function loginWithCredentials(
+  credentials: LoginCredentials
+): Promise<AuthResponse> {
+  return apiClient.post<AuthResponse>("/auth/login", {
     ...credentials,
     role: "USER",
   });
 }
 
-export async function registerWithCredentials(credentials: SignupCredentials) {
-  return postAuth("/register", {
+/**
+ * Register with email, password, and username
+ * Returns tokens and basic user info
+ */
+export async function registerWithCredentials(
+  credentials: SignupCredentials
+): Promise<AuthResponse> {
+  return apiClient.post<AuthResponse>("/auth/register", {
     ...credentials,
     role: "USER",
+  });
+}
+
+/**
+ * Login with Google OAuth token
+ * Returns tokens and basic user info
+ */
+export async function loginWithGoogle(googleToken: string): Promise<AuthResponse> {
+  return apiClient.post<AuthResponse>("/auth/google/login", {
+    token: googleToken,
   });
 }
