@@ -1,31 +1,11 @@
-import { log } from "lib/log";
+import { apiClient } from "lib/apiClient";
 
-const AUTH_API_BASE = "http://localhost:8080/api/auth";
-const JSON_HEADERS = {
-  "Content-Type": "application/json",
-};
-
-async function postAuth(endpoint: string, body: Record<string, unknown>) {
-  const url = `${AUTH_API_BASE}${endpoint}`;
-  log(`Sending auth request to ${url}`, "src/screens/desktop/components/auth/api.ts", "postAuth");
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: JSON_HEADERS,
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    const errorDetail = await response.text();
-    throw new Error(errorDetail || "Authentication request failed");
-  }
-
-  const contentType = response.headers.get("content-type");
-  if (contentType?.includes("application/json")) {
-    return response.json();
-  }
-
-  return null;
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  email: string;
+  provider: string;
+  message: string;
 }
 
 export type LoginCredentials = {
@@ -40,15 +20,21 @@ export type SignupCredentials = {
 };
 
 export async function loginWithCredentials(credentials: LoginCredentials) {
-  return postAuth("/login", {
+  return apiClient.post<AuthResponse>("/auth/login", {
     ...credentials,
     role: "USER",
   });
 }
 
 export async function registerWithCredentials(credentials: SignupCredentials) {
-  return postAuth("/register", {
+  return apiClient.post<AuthResponse>("/auth/register", {
     ...credentials,
     role: "USER",
+  });
+}
+
+export async function refreshTokens(refreshToken: string) {
+  return apiClient.post<AuthResponse>("/auth/refresh", {
+    refreshToken,
   });
 }

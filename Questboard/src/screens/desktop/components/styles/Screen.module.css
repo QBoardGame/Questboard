@@ -22,14 +22,14 @@
   min-height: 100vh;
 }
 
-.desktop__containerAuth {
+.desktop_containerAuth {
   width: 100%;
   min-height: 100vh;
   padding-top: 56px;
   box-sizing: border-box;
 }
 
-.desktop__containerDashboard {
+.desktop_containerDashboard {
   width: 100%;
   min-height: calc(100vh - 56px);
   padding-top: 56px;
@@ -261,7 +261,7 @@
 }
 
 @media (max-width: 900px) {
-  .desktop__containerDashboard {
+  .desktop_containerDashboard {
     padding-left: 16px;
   }
 

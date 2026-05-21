@@ -4,6 +4,7 @@ import { useDesktopAuth } from "./auth/useDesktopAuth";
 import { LoginPage } from "./auth/LoginPage";
 import { SignupPage } from "./auth/SignupPage";
 import { Dashboard } from "./Dashboard";
+import { Loading } from "components/Loading";
 import Sidebar from "./Sidebar";
 import styles from "./styles/Screen.module.css";
 
@@ -13,6 +14,7 @@ const Screen = () => {
   const [activeScreen, setActiveScreen] = useState<ScreenKey>("home");
   const {
     isAuthenticated,
+    isLoading,
     mode,
     signInWithGoogle,
     loginWithCredentials,
@@ -38,19 +40,23 @@ const Screen = () => {
   return (
     <div className={styles.desktop}>
       <DesktopHeader />
-      {isAuthenticated ? (
+      {isLoading ? (
+        <div className={styles.desktop_containerAuth}>
+          <Loading />
+        </div>
+      ) : isAuthenticated ? (
         <>
           <Sidebar
             active={activeScreen}
             onChange={setActiveScreen}
             onLogout={logout}
           />
-          <div className={styles.desktop__containerDashboard}>
+          <div className={styles.desktop_containerDashboard}>
             <Dashboard activeScreen={activeScreen} />
           </div>
         </>
       ) : (
-        <div className={styles.desktop__containerAuth}>{authContent}</div>
+        <div className={styles.desktop_containerAuth}>{authContent}</div>
       )}
     </div>
   );
