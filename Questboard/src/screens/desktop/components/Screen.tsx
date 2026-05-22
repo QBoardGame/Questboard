@@ -8,7 +8,7 @@ import { Loading } from "components/Loading";
 import Sidebar from "./Sidebar";
 import styles from "./styles/Screen.module.css";
 
-type ScreenKey = "home" | "games" | "premium" | "profile";
+type ScreenKey = "home" | "games" | "premium" | "challenges" | "profile";
 
 const Screen = () => {
   const [activeScreen, setActiveScreen] = useState<ScreenKey>("home");

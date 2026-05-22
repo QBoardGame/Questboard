@@ -1,43 +1,8 @@
 import { useState } from "react";
 import { GAMES, GameInfo } from "data/games";
-import { wsClient } from "lib/wsClient";
-import { log } from "lib/log";
 
 export const GamesContent = () => {
   const [selected, setSelected] = useState<GameInfo | null>(null);
-  const [isTracking, setIsTracking] = useState(false);
-
-  const startTracking = async (game: GameInfo) => {
-    try {
-      await wsClient.connect();
-      setIsTracking(true);
-
-      // send a launch message (gameId only as requested)
-      const payload = {
-        gameId: game.id,
-        eventType: "MATCH_PLAYED",
-        eventTimestamp: new Date().toISOString(),
-        rawData: { action: "launch" },
-      };
-
-      const ok = wsClient.sendEvent(payload);
-      log(`Sent launch message for ${game.title}: ${ok}`, "src/screens/desktop/components/GamesContent.tsx", "startTracking");
-    } catch (err) {
-      log(`Failed to start tracking: ${err}`, "src/screens/desktop/components/GamesContent.tsx", "startTracking");
-    }
-  };
-
-  const sendInGameEvent = (game: GameInfo, type: string, value = 1) => {
-    const payload = {
-      gameId: game.id,
-      eventType: type,
-      eventTimestamp: new Date().toISOString(),
-      rawData: { value, metadata: {} },
-    };
-
-    const ok = wsClient.sendEvent(payload);
-    log(`Sent event ${type} for ${game.title}: ${ok}`, "src/screens/desktop/components/GamesContent.tsx", "sendInGameEvent");
-  };
 
   return (
     <div className="space-y-8">
@@ -74,12 +39,7 @@ export const GamesContent = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-lg font-semibold">{selected.title} — Tasks</h4>
-                <p className="text-sm text-slate-500">Game ID: {selected.id}</p>
-              </div>
-              <div>
-                <button className="rounded bg-sky-600 px-3 py-1 text-white" onClick={() => startTracking(selected)}>
-                  Start Tracking
-                </button>
+                <p className="text-sm text-slate-500">Tracking is automatic when Overwolf detects the game.</p>
               </div>
             </div>
 
@@ -102,11 +62,6 @@ export const GamesContent = () => {
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-2">
-              <button className="rounded bg-red-500 px-3 py-1 text-white" onClick={() => sendInGameEvent(selected, 'KILL')}>Send Kill</button>
-              <button className="rounded bg-yellow-500 px-3 py-1 text-white" onClick={() => sendInGameEvent(selected, 'ASSIST')}>Send Assist</button>
-              <button className="rounded bg-gray-500 px-3 py-1 text-white" onClick={() => sendInGameEvent(selected, 'MATCH_PLAYED')}>Send Match Played</button>
-            </div>
           </div>
         )}
       </section>

@@ -71,7 +71,7 @@
 }
 
 .sidebar_button:hover .sidebar_label,
-.sidebar_item.active {
+.sidebar_item.active .sidebar_label {
   opacity: 1;
   transform: translateX(0);
 }
@@ -110,13 +110,9 @@
   font-weight: 700;
 }
 
-.profile_meta {
-  display: none;
-}
-
 .profile_menu {
   position: fixed;
-  bottom: 0px;
+  bottom: 0;
   left: 60px;
   background: #0a1a3b;
   border-radius: 8px;

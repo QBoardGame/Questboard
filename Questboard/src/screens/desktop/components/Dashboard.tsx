@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import { HomeContent } from "./HomeContent";
 import { GamesContent } from "./GamesContent";
 import { PremiumContent } from "./PremiumContent";
+import { ChallengesContent } from "./ChallengesContent";
 import { ProfileContent } from "./ProfileContent";
 import styles from "./styles/Screen.module.css";
 
 type DashboardProps = {
-  activeScreen: "home" | "games" | "premium" | "profile";
+  activeScreen: "home" | "games" | "premium" | "challenges" | "profile";
 };
 
 export const Dashboard = ({ activeScreen }: DashboardProps) => {
@@ -17,6 +18,8 @@ export const Dashboard = ({ activeScreen }: DashboardProps) => {
         return <GamesContent />;
       case "premium":
         return <PremiumContent />;
+      case "challenges":
+        return <ChallengesContent />;
       case "profile":
         return <ProfileContent />;
       default:

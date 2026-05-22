@@ -1,11 +1,17 @@
 export const HEARTHSTONE_CLASS_ID = 9898;
 
+export function getRunningGameInfo(): Promise<overwolf.games.GetRunningGameInfoResult | null> {
+  return new Promise((resolve) => {
+    overwolf.games.getRunningGameInfo((result) => {
+      resolve(result?.classId ? result : null);
+    });
+  });
+}
+
 export function getHearthstoneGame(): Promise<overwolf.games.GetRunningGameInfoResult | null> {
   return new Promise((resolve) => {
     overwolf.games.getRunningGameInfo((result) => {
-      resolve(
-        result && result.classId === HEARTHSTONE_CLASS_ID ? result : null,
-      );
+      resolve(result && result.classId === HEARTHSTONE_CLASS_ID ? result : null);
     });
   });
 }

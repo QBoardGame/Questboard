@@ -9,7 +9,6 @@ import {
   LoginCredentials,
   SignupCredentials,
 } from "./api";
-import { wsClient } from "lib/wsClient";
 
 type AuthMode = "login" | "signup";
 
@@ -44,7 +43,6 @@ export const useDesktopAuth = () => {
 
         applyAuthResponse(response);
         setIsAuthenticated(true);
-        void wsClient.connect();
       } catch {
         if (!isActive) {
           return;
@@ -69,7 +67,6 @@ export const useDesktopAuth = () => {
   const persistAuth = useCallback((response: AuthResponse) => {
     applyAuthResponse(response);
     setIsAuthenticated(true);
-    void wsClient.connect();
   }, []);
 
   const logout = useCallback(() => {
@@ -79,7 +76,7 @@ export const useDesktopAuth = () => {
 
   const signInWithGoogle = useCallback(() => {
     loginWithThirdParty(ThirdPartyProvider.Google);
-  }, [persistAuth]);
+  }, []);
 
   const loginWithCredentials = useCallback(
     async (credentials: LoginCredentials) => {

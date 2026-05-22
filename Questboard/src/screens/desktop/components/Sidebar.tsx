@@ -2,8 +2,8 @@ import React from "react";
 import "./styles/Sidebar.css";
 
 type SidebarProps = {
-  active?: "home" | "games" | "premium" | "profile";
-  onChange?: (key: "home" | "games" | "premium" | "profile") => void;
+  active?: "home" | "games" | "premium" | "challenges" | "profile";
+  onChange?: (key: "home" | "games" | "premium" | "challenges" | "profile") => void;
   onLogout?: () => void;
 };
 
@@ -43,12 +43,12 @@ export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) =
       ),
     },
     {
-      key: "profile",
-      label: "Profile",
-      aria: "Profile",
+      key: "challenges",
+      label: "Challenges",
+      aria: "Challenges",
       icon: (
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4.4 0-8 2.2-8 4v2h16v-2c0-1.8-3.6-4-8-4z" />
+          <path d="M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm1.5 4.5v2h7v-2h-7zm0 4v2h7v-2h-7zm0 4v1h4v-1h-4z" />
         </svg>
       ),
     },
@@ -83,9 +83,6 @@ export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) =
           ) : (
             <div className="profile_avatar profile_placeholder">{username.charAt(0).toUpperCase()}</div>
           )}
-          <div className="profile_meta">
-            <div className="profile_name">{username}</div>
-          </div>
 
           <div className="profile_menu" role="menu">
             <button type="button" className="profile_menu-item" onClick={() => handleClick("profile")}>
