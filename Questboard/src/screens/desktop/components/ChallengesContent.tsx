@@ -27,13 +27,21 @@ export const ChallengesContent = () => {
       setError(null);
 
       try {
-        const entries = await Promise.all(
+        const results = await Promise.allSettled(
           GAMES.map(async (game) => [game.id, await getGameChallenges(game.id)] as const)
         );
+
+        const entries = results
+          .filter((result): result is PromiseFulfilledResult<readonly [number, ChallengeWithProgressDto[]]> => result.status === "fulfilled")
+          .map((result) => result.value);
 
         if (!isMounted) return;
 
         setChallengesByGame(Object.fromEntries(entries));
+
+        if (entries.length === 0) {
+          setError("No challenge strategies are available for the configured games yet.");
+        }
       } catch (loadError) {
         if (!isMounted) return;
 

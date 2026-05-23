@@ -21,7 +21,7 @@ export const GAMES: GameInfo[] = [
     },
   },
   {
-    id: 21566,
+    id: 9898,
     slug: "hearthstone",
     title: "Hearthstone",
     platform: "Overwolf",
@@ -31,7 +31,7 @@ export const GAMES: GameInfo[] = [
     },
   },
   {
-    id: 99999,
+    id: 21566,
     slug: "apex",
     title: "Apex Legends",
     platform: "PC",
