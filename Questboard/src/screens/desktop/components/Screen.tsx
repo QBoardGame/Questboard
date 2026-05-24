@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { DesktopHeader } from "./DesktopHeader";
 import { useDesktopAuth } from "./auth/useDesktopAuth";
 import { LoginPage } from "./auth/LoginPage";
@@ -7,11 +8,14 @@ import { Dashboard } from "./Dashboard";
 import { Loading } from "components/Loading";
 import Sidebar from "./Sidebar";
 import styles from "./styles/Screen.module.css";
+import { AppDispatch } from "app/shared/store";
+import { clearProfile, fetchProfile } from "app/shared/profileSlice";
 
-type ScreenKey = "home" | "games" | "premium" | "challenges" | "profile";
+type ScreenKey = "home" | "games" | "premium" | "challenges" | "profile" | "creator";
 
 const Screen = () => {
   const [activeScreen, setActiveScreen] = useState<ScreenKey>("home");
+  const dispatch = useDispatch<AppDispatch>();
   const {
     isAuthenticated,
     isLoading,
@@ -22,6 +26,14 @@ const Screen = () => {
     switchMode,
     logout,
   } = useDesktopAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      void dispatch(fetchProfile());
+    } else {
+      dispatch(clearProfile());
+    }
+  }, [dispatch, isAuthenticated]);
 
   const authContent = mode === "login" ? (
     <LoginPage

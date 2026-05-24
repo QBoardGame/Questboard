@@ -1,15 +1,19 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { RootReducer } from "app/shared/rootReducer";
 import "./styles/Sidebar.css";
 
 type SidebarProps = {
-  active?: "home" | "games" | "premium" | "challenges" | "profile";
-  onChange?: (key: "home" | "games" | "premium" | "challenges" | "profile") => void;
+  active?: "home" | "games" | "premium" | "challenges" | "profile" | "creator";
+  onChange?: (key: "home" | "games" | "premium" | "challenges" | "profile" | "creator") => void;
   onLogout?: () => void;
 };
 
 export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) => {
-  const username = localStorage.getItem("username") || "You";
-  const avatar = localStorage.getItem("avatar") || "";
+  const profile = useSelector((state: RootReducer) => state.profile.data);
+  const username = profile?.username || localStorage.getItem("username") || "You";
+  const avatar = profile?.avatarUrl || localStorage.getItem("avatar") || "";
+  const role = profile?.role?.toUpperCase();
 
   const items: Array<{ key: any; label: string; aria: string; icon: JSX.Element }> = [
     {
@@ -53,6 +57,20 @@ export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) =
       ),
     },
   ];
+
+  if (role === "STREAMER" || role === "BRAND") {
+    items.splice(3, 0, {
+      key: "creator",
+      label: "Creator Dashboard",
+      aria: "Creator Dashboard",
+      icon: (
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M4 5h16v14H4z" fill="none" />
+          <path d="M7 8h10v2H7zm0 5h6v2H7z" />
+        </svg>
+      ),
+    });
+  }
 
   const handleClick = (key: any) => {
     if (onChange) onChange(key);
