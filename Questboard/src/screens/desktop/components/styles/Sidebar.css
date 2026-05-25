@@ -10,18 +10,19 @@
   left: 16px;
   height: calc(100vh - 84px);
   z-index: 900;
-  background: #0b1f46;
-  border: 1px solid rgba(120, 165, 255, 0.14);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+  border: 1px solid var(--glass-border);
   border-radius: 20px;
-  box-shadow: 0 18px 42px rgba(2, 10, 30, 0.45);
-  backdrop-filter: blur(8px);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(8px) saturate(120%);
+  transition: transform var(--transition-medium) ease, box-shadow var(--transition-medium) ease;
 }
 
 .sidebar_list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px 0;
+  gap: 12px;
+  padding: 14px 0;
   margin: 0;
   list-style: none;
 }
@@ -39,14 +40,23 @@
   justify-content: center;
   border: none;
   background: transparent;
-  color: var(--green-color);
+  color: var(--accent-2);
   cursor: pointer;
   position: relative;
+  transition: transform var(--transition-fast) ease, color var(--transition-fast) ease, box-shadow var(--transition-fast) ease, background var(--transition-fast) ease;
 }
 
-.sidebar_button:hover,
+.sidebar_button:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 28px rgba(0,240,255,0.06), 0 0 18px rgba(124,92,255,0.06);
+  background: linear-gradient(135deg, rgba(124,92,255,0.06), rgba(0,240,255,0.04));
+}
+
 .sidebar_item.active .sidebar_button {
-  background: rgba(255,255,255,0.1);
+  background: var(--accent-glow);
+  color: var(--primary-foreground);
+  box-shadow: 0 12px 34px rgba(124,92,255,0.14), 0 0 24px rgba(0,240,255,0.08);
+  transform: translateY(-6px) scale(1.04);
 }
 
 .sidebar_icon {
@@ -59,15 +69,17 @@
   position: absolute;
   left: 72px;
   padding: 8px 12px;
-  background: #091633;
-  color: white;
+  background: linear-gradient(180deg, rgba(11,18,32,0.9), rgba(6,10,20,0.88));
+  color: var(--primary-foreground);
   border-radius: 8px;
   white-space: nowrap;
   opacity: 0;
-  transform: translateX(-6px);
-  transition: opacity 120ms ease, transform 120ms ease;
+  transform: translateX(-8px);
+  transition: opacity var(--transition-fast) ease, transform var(--transition-fast) ease;
   pointer-events: none;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  box-shadow: 0 8px 24px rgba(2,6,20,0.6);
+  border: 1px solid rgba(255,255,255,0.03);
 }
 
 .sidebar_button:hover .sidebar_label,
@@ -96,6 +108,7 @@
   height: 44px;
   border-radius: 999px;
   object-fit: cover;
+  transition: box-shadow var(--transition-fast) ease, transform var(--transition-fast) ease;
 }
 
 .profile_placeholder {
@@ -105,37 +118,45 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.06);
-  color: var(--primary-color-text);
+  background: linear-gradient(135deg, rgba(124,92,255,0.08), rgba(0,240,255,0.04));
+  color: var(--primary-foreground);
   font-weight: 700;
+  box-shadow: 0 8px 20px rgba(124,92,255,0.06);
 }
 
 .profile_menu {
   position: fixed;
   bottom: 0;
   left: 60px;
-  background: #0a1a3b;
-  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(6,10,20,0.94), rgba(6,10,20,0.88));
+  border-radius: 10px;
   padding: 6px;
   display: none;
   flex-direction: column;
-  min-width: 160px;
-  border: 1px solid rgba(120, 165, 255, 0.12);
-  box-shadow: 0 16px 36px rgba(2, 10, 30, 0.45);
+  min-width: 180px;
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 16px 44px rgba(2, 6, 20, 0.7), 0 0 28px rgba(124,92,255,0.06);
+  transition: opacity var(--transition-medium) ease, transform var(--transition-medium) ease;
+  transform-origin: left bottom;
+  opacity: 0;
 }
 
 .profile_menu-item {
   background: transparent;
-  color: #dbe8ff;
+  color: var(--primary-foreground);
   border: none;
   text-align: left;
   padding: 10px 12px;
   cursor: pointer;
+  transition: background var(--transition-fast) ease, color var(--transition-fast) ease;
+  border-radius: 6px;
 }
 
 .profile:hover .profile_menu,
 .profile:focus-within .profile_menu {
   display: flex;
+  opacity: 1;
+  transform: translateY(-6px);
 }
 
 @media (max-width: 900px) {

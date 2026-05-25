@@ -5,17 +5,29 @@ import "./styles/Sidebar.css";
 
 type SidebarProps = {
   active?: "home" | "games" | "premium" | "challenges" | "profile" | "creator";
-  onChange?: (key: "home" | "games" | "premium" | "challenges" | "profile" | "creator") => void;
+  onChange?: (
+    key: "home" | "games" | "premium" | "challenges" | "profile" | "creator",
+  ) => void;
   onLogout?: () => void;
 };
 
-export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) => {
+export const Sidebar = ({
+  active = "home",
+  onChange,
+  onLogout,
+}: SidebarProps) => {
   const profile = useSelector((state: RootReducer) => state.profile.data);
-  const username = profile?.username || localStorage.getItem("username") || "You";
+  const username =
+    profile?.username || localStorage.getItem("username") || "You";
   const avatar = profile?.avatarUrl || localStorage.getItem("avatar") || "";
   const role = profile?.role?.toUpperCase();
 
-  const items: Array<{ key: any; label: string; aria: string; icon: JSX.Element }> = [
+  const items: Array<{
+    key: any;
+    label: string;
+    aria: string;
+    icon: JSX.Element;
+  }> = [
     {
       key: "home",
       label: "Home",
@@ -78,13 +90,30 @@ export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) =
 
   return (
     <nav className="sidebar" aria-label="Main sidebar">
-      <ul className="sidebar_list">
+      {/* <ul className="sidebar_list">
         {items.map((it) => (
           <li key={it.key} className={`sidebar_item ${active === it.key ? "active" : ""}`}>
             <button
               type="button"
               className="sidebar_button"
               aria-label={it.aria}
+              onClick={() => handleClick(it.key)}
+            >
+              <span className="sidebar_icon">{it.icon}</span>
+              <span className="sidebar_label">{it.label}</span>
+            </button>
+          </li>
+        ))}
+      </ul> */}
+
+      <ul className="sidebar_list">
+        {items.map((it) => (
+          <li key={it.key} className= "sidebar_item" >
+            <button
+              type="button"
+              className="sidebar_button"
+              aria-label={it.aria}
+              aria-pressed={active === it.key}
               onClick={() => handleClick(it.key)}
             >
               <span className="sidebar_icon">{it.icon}</span>
@@ -99,17 +128,31 @@ export const Sidebar = ({ active = "home", onChange, onLogout }: SidebarProps) =
           {avatar ? (
             <img className="profile_avatar" src={avatar} alt={username} />
           ) : (
-            <div className="profile_avatar profile_placeholder">{username.charAt(0).toUpperCase()}</div>
+            <div className="profile_avatar profile_placeholder">
+              {username.charAt(0).toUpperCase()}
+            </div>
           )}
 
           <div className="profile_menu" role="menu">
-            <button type="button" className="profile_menu-item" onClick={() => handleClick("profile")}>
+            <button
+              type="button"
+              className="profile_menu-item"
+              onClick={() => handleClick("profile")}
+            >
               Go to profile
             </button>
-            <button type="button" className="profile_menu-item" onClick={() => window.location.href = "overwolf://settings"}>
+            <button
+              type="button"
+              className="profile_menu-item"
+              onClick={() => (window.location.href = "overwolf://settings")}
+            >
               Settings
             </button>
-            <button type="button" className="profile_menu-item" onClick={() => onLogout && onLogout()}>
+            <button
+              type="button"
+              className="profile_menu-item"
+              onClick={() => onLogout && onLogout()}
+            >
               Log out
             </button>
           </div>

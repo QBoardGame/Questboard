@@ -3,31 +3,46 @@
 @tailwind utilities;
 
 :root {
-  --neutral-1: #262626;
-  --neutral-2: #404040;
-  --neutral-3: #525252;
-  --neutral-4: #a1a1aa;
+  /* Core neutrals */
+  --neutral-1: #07070b;
+  --neutral-2: #0f1720;
+  --neutral-3: #11151a;
+  --neutral-4: #9aa6b2;
 
-  --primary-color: #1976d2;
-  --primary-color-light: #63a4ff;
-  --primary-color-dark: #004ba0;
-  --primary-color-text: #ffffff;
-  --secondary-color: #c2185b;
-  --secondary-color-light: #fa5788;
-  --secondary-color-dark: #8c0032;
-  --secondary-color-text: #ffffff;
-  --disabled-color: #666666;
-  --error-color: #b00020;
-  --background-color: #171717;
-  --font-family: "Roboto", sans-serif;
+  /* Gamer accents */
+  --accent-1: #7c5cff; /* purple */
+  --accent-2: #00f0ff; /* cyan */
+  --accent-3: #ff3cac; /* magenta */
+  --accent-gold: #ffd166;
+  --accent-glow: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+
+  /* Legacy/compat colors */
+  --primary-color-text: #0b1220;
+  --primary-foreground: #eaf6ff;
+
+  /* UI surfaces */
+  --background-color: #05060a;
+  --surface-glass: rgba(255,255,255,0.02);
+  --panel-glass: rgba(255,255,255,0.03);
+  --glass-border: rgba(124,92,255,0.12);
+  --glass-shadow: 0 12px 32px rgba(124,92,255,0.10);
+
+  /* Typography */
+  --font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   --font-size: 16px;
   --font-weight: 400;
-  --font-size-small: 14px;
+  --font-size-small: 13px;
   --font-size-medium: 16px;
   --font-size-large: 18px;
-  --discord-color: #7289da;
-  --green-color: #00E307;
-  --blue-color: #7dd3fc;
+
+  /* Controls */
+  --disabled-color: #464e56;
+  --error-color: #ff4d6d;
+
+  /* Utility */
+  --transition-fast: 160ms;
+  --transition-medium: 300ms;
+  --focus-ring: 0 0 0 4px rgba(124,92,255,0.12);
 }
 
 
