@@ -36,8 +36,13 @@ export type ChallengeWithProgressDto = {
   progress: UserChallengeProgressDto | null;
 };
 
-export async function getGameChallenges(gameId: number) {
-  return apiClient.get<ChallengeWithProgressDto[]>(`/challenges/games/${gameId}`);
+export async function getGameChallenges(gameId: number, type?: string) {
+  const query = type ? `?type=${encodeURIComponent(type)}` : "";
+  return apiClient.get<ChallengeWithProgressDto[]>(`/challenges/games/${gameId}${query}`);
+}
+
+export async function getStreamerChallenges() {
+  return apiClient.get<ChallengeWithProgressDto[]>(`/challenges/games/streamer`);
 }
 
 export async function claimChallengeReward(challengeId: string) {
