@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootReducer } from "app/shared/rootReducer";
+import { DEFAULT_EVENT_TYPE, DEFAULT_GAME_ID, GAME_EVENT_TYPE_OPTIONS, GAME_OPTIONS, ValorantEventType, VALORANT_GUNS, GameId } from "./gameChallengeConfig";
 
 export const CreatorDashboard = () => {
   const profile = useSelector((state: RootReducer) => state.profile.data);
@@ -20,18 +21,69 @@ export const CreatorDashboard = () => {
   const [adCTA, setAdCTA] = useState("");
   const [challengeTitle, setChallengeTitle] = useState("");
   const [challengeDescription, setChallengeDescription] = useState("");
-  const [eventType, setEventType] = useState("KILL");
+  const [eventType, setEventType] = useState<ValorantEventType>(DEFAULT_EVENT_TYPE);
   const [creatorType, setCreatorType] = useState(role || "STREAMER");
   const [visibility, setVisibility] = useState("public");
   const [rewardType, setRewardType] = useState("coins");
   const [rewardValue, setRewardValue] = useState("");
+  const [maxUsers, setMaxUsers] = useState("");
   const [targetValue, setTargetValue] = useState("");
-  const [gameId, setGameId] = useState("");
-  const [startsAt, setStartsAt] = useState("");
-  const [endsAt, setEndsAt] = useState("");
+  const [gameId, setGameId] = useState(DEFAULT_GAME_ID);
+  const [scheduleType, setScheduleType] = useState<"scheduled" | "live">("scheduled");
+  const [startDay, setStartDay] = useState("");
+  const [startMonth, setStartMonth] = useState("");
+  const [startYear, setStartYear] = useState("");
+  const [startHour, setStartHour] = useState("");
+  const [startMinute, setStartMinute] = useState("");
+  const [durationHours, setDurationHours] = useState("");
+  const [selectedGun, setSelectedGun] = useState("");
   const [status, setStatus] = useState("draft");
   const [points, setPoints] = useState(0);
   const [errors, setErrors] = useState<string[]>([]);
+
+  const availableEventTypes = GAME_EVENT_TYPE_OPTIONS[gameId] ?? [];
+  const selectedGameOption = GAME_OPTIONS.find((option) => option.id === gameId);
+
+  const killEventTypes = [ValorantEventType.KILL, ValorantEventType.HEADSHOT, ValorantEventType.UTILITY_KILL];
+  const showGunSelect = gameId === GameId.VALORANT && killEventTypes.includes(eventType as ValorantEventType);
+  const availableGuns = VALORANT_GUNS;
+
+  const monthOptions = [
+    { value: "01", label: "Jan" },
+    { value: "02", label: "Feb" },
+    { value: "03", label: "Mar" },
+    { value: "04", label: "Apr" },
+    { value: "05", label: "May" },
+    { value: "06", label: "Jun" },
+    { value: "07", label: "Jul" },
+    { value: "08", label: "Aug" },
+    { value: "09", label: "Sep" },
+    { value: "10", label: "Oct" },
+    { value: "11", label: "Nov" },
+    { value: "12", label: "Dec" },
+  ];
+
+  const dayOptions = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0"));
+  const yearOptions = [new Date().getFullYear(), new Date().getFullYear() + 1].map(String);
+  const hourOptions = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+  const minuteOptions = ["00", "15", "30", "45"];
+
+  const startDateTime = (() => {
+    if (scheduleType === "live") {
+      return new Date().toISOString();
+    }
+    if (!startYear || !startMonth || !startDay || !startHour || !startMinute) return "";
+    const date = new Date(`${startYear}-${startMonth}-${startDay}T${startHour}:${startMinute}:00`);
+    return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+  })();
+
+  const endDateTime = (() => {
+    const duration = Number(durationHours);
+    if (!startDateTime || duration <= 0) return "";
+    const date = new Date(startDateTime);
+    date.setMinutes(date.getMinutes() + duration * 60);
+    return date.toISOString();
+  })();
 
   const handleCreateChallengeClick = () => {
     setShowChallengeForm(true);
@@ -90,12 +142,21 @@ export const CreatorDashboard = () => {
     const errs: string[] = [];
     if (!challengeTitle.trim()) errs.push("Challenge title is required");
     if (!challengeDescription.trim()) errs.push("Challenge description is required");
-    if (!gameId.trim()) errs.push("Game ID is required");
+    if (!selectedGameOption) errs.push("Game selection is required");
     if (!rewardValue.trim()) errs.push("Reward value is required");
+    if (!maxUsers.trim()) errs.push("Max users is required");
     if (!targetValue.trim()) errs.push("Target value is required");
-    if (!startsAt || !endsAt) errs.push("Start and end dates are required");
+    if (scheduleType === "scheduled") {
+      if (!startYear) errs.push("Start year is required");
+      if (!startMonth) errs.push("Start month is required");
+      if (!startDay) errs.push("Start day is required");
+      if (!startHour) errs.push("Start hour is required");
+      if (!startMinute) errs.push("Start minute is required");
+    }
+    if (!durationHours.trim() || Number(durationHours) <= 0) errs.push("Duration must be greater than 0");
+    if (!startDateTime || !endDateTime) errs.push("Valid start and end times are required");
+    if (showGunSelect && !selectedGun.trim()) errs.push("Gun type is required for this event");
     if (!points || points <= 0) errs.push("Points are required");
-    if (startsAt && endsAt && new Date(startsAt) > new Date(endsAt)) errs.push("Start date must be before end date");
     setErrors(errs);
     if (errs.length) return;
 
@@ -107,10 +168,12 @@ export const CreatorDashboard = () => {
       visibility,
       reward_type: rewardType,
       reward_value: rewardValue,
+      max_users: Number(maxUsers),
       target_value: Number(targetValue),
-      game_id: Number(gameId),
-      starts_at: startsAt,
-      ends_at: endsAt,
+      game_id: gameId,
+      gun_type: selectedGun || undefined,
+      starts_at: startDateTime,
+      ends_at: endDateTime,
       status,
       points,
     };
@@ -120,15 +183,22 @@ export const CreatorDashboard = () => {
     setShowChallengeForm(false);
     setChallengeTitle("");
     setChallengeDescription("");
-    setEventType("KILL");
+    setEventType(DEFAULT_EVENT_TYPE);
     setCreatorType(role || "STREAMER");
     setVisibility("public");
     setRewardType("coins");
     setRewardValue("");
+    setMaxUsers("");
     setTargetValue("");
-    setGameId("");
-    setStartsAt("");
-    setEndsAt("");
+    setGameId(DEFAULT_GAME_ID);
+    setScheduleType("scheduled");
+    setStartDay("");
+    setStartMonth("");
+    setStartYear("");
+    setStartHour("");
+    setStartMinute("");
+    setDurationHours("");
+    setSelectedGun("");
     setStatus("draft");
     setPoints(0);
     setErrors([]);
@@ -306,43 +376,51 @@ export const CreatorDashboard = () => {
 
             <div className="col-span-2">
               <label className="block text-sm font-medium text-slate-200">Description *</label>
-              <textarea value={challengeDescription} onChange={(e) => setChallengeDescription(e.target.value)} rows={3} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="Create a challenge that rewards viewers for completing daily goals." />
+              <textarea value={challengeDescription} onChange={(e) => setChallengeDescription(e.target.value)} rows={3} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="Describe the challenge and its objectives." />
+            </div>
+
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-slate-200">Game</label>
+              <select
+                value={gameId}
+                onChange={(e) => {
+                  const selectedId = Number(e.target.value) as typeof DEFAULT_GAME_ID;
+                  setGameId(selectedId);
+                  const nextType = GAME_EVENT_TYPE_OPTIONS[selectedId]?.[0]?.value ?? DEFAULT_EVENT_TYPE;
+                  setEventType(nextType as ValorantEventType);
+                }}
+                className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white"
+              >
+                {GAME_OPTIONS.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="col-span-2">
               <label className="block text-sm font-medium text-slate-200">Event type</label>
-              <select value={eventType} onChange={(e) => setEventType(e.target.value)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white">
-                <option value="KILL">KILL</option>
-                <option value="HEADSHOT">HEADSHOT</option>
-                <option value="ASSIST">ASSIST</option>
-                <option value="DAMAGE">DAMAGE</option>
-                <option value="DEATH">DEATH</option>
-                <option value="FIRST_BLOOD">FIRST_BLOOD</option>
-                <option value="CLUTCH_WIN">CLUTCH_WIN</option>
-                <option value="ACE">ACE</option>
-                <option value="MATCH_WIN">MATCH_WIN</option>
-                <option value="MATCH_PLAYED">MATCH_PLAYED</option>
-                <option value="MATCH_LOSS">MATCH_LOSS</option>
-                <option value="DRAW">DRAW</option>
-                <option value="SPIKE_PLANT">SPIKE_PLANT</option>
-                <option value="SPIKE_DEFUSE">SPIKE_DEFUSE</option>
-                <option value="SPIKE_DENIAL">SPIKE_DENIAL</option>
-                <option value="OBJECTIVE_CAPTURE">OBJECTIVE_CAPTURE</option>
-                <option value="PLAYTIME">PLAYTIME</option>
-                <option value="ROUND_PLAYED">ROUND_PLAYED</option>
-                <option value="MVP">MVP</option>
-                <option value="TOP_FRAGGER">TOP_FRAGGER</option>
-                <option value="WIN_STREAK">WIN_STREAK</option>
-                <option value="ABILITY_USAGE">ABILITY_USAGE</option>
-                <option value="UTILITY_KILL">UTILITY_KILL</option>
-                <option value="ECONOMIC_DAMAGE">ECONOMIC_DAMAGE</option>
+              <select value={eventType} onChange={(e) => setEventType(e.target.value as ValorantEventType)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white">
+                {availableEventTypes.map((option) => (
+                  <option key={option.value} value={option.value as ValorantEventType}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-200">Game ID *</label>
-              <input value={gameId} onChange={(e) => setGameId(e.target.value)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="12345" />
-            </div>
+            {showGunSelect && (
+              <div>
+                <label className="block text-sm font-medium text-slate-200">Gun type</label>
+                <select value={selectedGun} onChange={(e) => setSelectedGun(e.target.value)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white">
+                  <option value="">Any</option>
+                  {availableGuns.map((g) => (
+                    <option key={g.value} value={g.value}>{g.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-slate-200">Visibility</label>
@@ -354,42 +432,105 @@ export const CreatorDashboard = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-200">Creator type</label>
-              <input value={creatorType} onChange={(e) => setCreatorType(e.target.value)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" />
-            </div>
-
-            <div>
               <label className="block text-sm font-medium text-slate-200">Reward type</label>
               <select value={rewardType} onChange={(e) => setRewardType(e.target.value)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white">
                 <option value="coins">Coins</option>
-                <option value="points">Points</option>
-                <option value="skin">Skin</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-200">Reward value *</label>
-              <input value={rewardValue} onChange={(e) => setRewardValue(e.target.value)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="100" />
+              <input value={rewardValue} onChange={(e) => {
+                const val = e.target.value.replace(/[^0-9]/g, "");
+                setRewardValue(Math.min(Number(val) || 0, 10000).toString());
+              }} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="100" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-200">Max users *</label>
+              <input value={maxUsers} onChange={(e) => {
+                const val = e.target.value.replace(/[^0-9]/g, "");
+                setMaxUsers(Math.min(Number(val) || 0, 100).toString());
+              }} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="10" />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-200">Target value *</label>
-              <input type="number" value={targetValue} onChange={(e) => setTargetValue(e.target.value)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="5" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-200">Starts at *</label>
-              <input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-200">Ends at *</label>
-              <input type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" />
+              <input value={targetValue} onChange={(e) => setTargetValue(e.target.value.replace(/[^0-9]/g, ""))} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="5" />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-slate-200">Points *</label>
-              <input type="number" min={1} value={points} onChange={(e) => setPoints(Number(e.target.value))} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="100" />
+              <label className="block text-sm font-medium text-slate-200">Schedule</label>
+              <div className="mt-1 flex flex-wrap gap-2">
+                <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white">
+                  <input type="radio" name="scheduleType" value="live" checked={scheduleType === "live"} onChange={() => setScheduleType("live")} />
+                  Live now
+                </label>
+                <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white">
+                  <input type="radio" name="scheduleType" value="scheduled" checked={scheduleType === "scheduled"} onChange={() => setScheduleType("scheduled")} />
+                  Scheduled
+                </label>
+              </div>
+            </div>
+
+            {scheduleType === "scheduled" ? (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-slate-200">Start date *</label>
+                  <div className="mt-1 flex gap-2 rounded-2xl border border-slate-700 bg-slate-900 px-2 py-2">
+                    <select value={startDay} onChange={(e) => setStartDay(e.target.value)} className="w-1/3 rounded-xl border border-slate-700 bg-slate-900 px-2 py-2 text-white">
+                      <option value="">Day</option>
+                      {dayOptions.map((day) => (
+                        <option key={day} value={day}>{day}</option>
+                      ))}
+                    </select>
+                    <select value={startMonth} onChange={(e) => setStartMonth(e.target.value)} className="w-1/3 rounded-xl border border-slate-700 bg-slate-900 px-2 py-2 text-white">
+                      <option value="">Month</option>
+                      {monthOptions.map((month) => (
+                        <option key={month.value} value={month.value}>{month.label}</option>
+                      ))}
+                    </select>
+                    <select value={startYear} onChange={(e) => setStartYear(e.target.value)} className="w-1/3 rounded-xl border border-slate-700 bg-slate-900 px-2 py-2 text-white">
+                      <option value="">Year</option>
+                      {yearOptions.map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-200">Start time *</label>
+                  <div className="mt-1 flex gap-2 rounded-2xl border border-slate-700 bg-slate-900 px-2 py-2">
+                    <select value={startHour} onChange={(e) => setStartHour(e.target.value)} className="w-1/2 rounded-xl border border-slate-700 bg-slate-900 px-2 py-2 text-white">
+                      <option value="">Hour</option>
+                      {hourOptions.map((hour) => (
+                        <option key={hour} value={hour}>{hour}</option>
+                      ))}
+                    </select>
+                    <select value={startMinute} onChange={(e) => setStartMinute(e.target.value)} className="w-1/2 rounded-xl border border-slate-700 bg-slate-900 px-2 py-2 text-white">
+                      <option value="">Minute</option>
+                      {minuteOptions.map((minute) => (
+                        <option key={minute} value={minute}>{minute}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="col-span-2 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200">
+                Live now will start immediately when the challenge is created.
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-slate-200">Duration (hours) *</label>
+              <input value={durationHours} onChange={(e) => setDurationHours(e.target.value.replace(/[^0-9.]/g, ""))} className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" placeholder="2" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-200">Calculated end</label>
+              <input type="text" value={endDateTime ? new Date(endDateTime).toLocaleString() : "Enter schedule details"} readOnly className="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-900 px-3 py-2 text-white" />
             </div>
 
             <div className="col-span-2 flex flex-wrap items-center gap-3 pt-3">

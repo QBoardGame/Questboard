@@ -64,9 +64,26 @@ export const useDesktopAuth = () => {
     };
   }, []);
 
+  // const persistAuth = useCallback((response: AuthResponse) => {
+  //   applyAuthResponse(response);
+  //   setIsAuthenticated(true);
+  // }, []);
+
   const persistAuth = useCallback((response: AuthResponse) => {
     applyAuthResponse(response);
     setIsAuthenticated(true);
+
+    // 🔥 IMPORTANT: notify background
+    const main = overwolf.windows.getMainWindow();
+
+    main.postMessage(
+      {
+        type: "AUTH_SUCCESS",
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      },
+      "*",
+    );
   }, []);
 
   const logout = useCallback(() => {
@@ -83,7 +100,7 @@ export const useDesktopAuth = () => {
       const response = await loginRequest(credentials);
       persistAuth(response);
     },
-    [persistAuth]
+    [persistAuth],
   );
 
   const registerWithCredentials = useCallback(
@@ -91,7 +108,7 @@ export const useDesktopAuth = () => {
       const response = await registerRequest(credentials);
       persistAuth(response);
     },
-    [persistAuth]
+    [persistAuth],
   );
 
   const switchMode = useCallback(() => {

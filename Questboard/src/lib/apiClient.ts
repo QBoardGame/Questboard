@@ -33,9 +33,9 @@ class ApiClient {
       headers,
     });
 
-    if (response.status === 401 && endpoint !== "/auth/refresh") {
+    if ((response.status === 401 || response.status === 403) && endpoint !== "/auth/refresh") {
       log(
-        "Received 401 - refreshing access token",
+        `Received ${response.status} - refreshing access token`,
         "src/lib/apiClient.ts",
         "request"
       );
@@ -149,6 +149,10 @@ class ApiClient {
     return this.request<T>(endpoint, {
       method: "DELETE",
     });
+  }
+
+  async refreshToken(): Promise<string | null> {
+    return this.refreshAccessToken();
   }
 }
 
