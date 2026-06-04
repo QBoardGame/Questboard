@@ -3,7 +3,7 @@
   "type": "WebApp",
   "permissions": ["Extensions", "Hotkeys", "GameInfo", "FileSystem"],
   "meta": {
-    "name": "Generic Game Events Consumer Sample",
+    "name": "Aurum",
     "version": "0.1.0",
     "minimum-overwolf-version": "0.220.0.1",
     "author": "Overwolf",
