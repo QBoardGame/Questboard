@@ -1,4 +1,4 @@
-import { GAMES } from "data/games";
+import { GAMES } from "../constants/games";
 
 export type GameEventPayload = {
   gameId: number;

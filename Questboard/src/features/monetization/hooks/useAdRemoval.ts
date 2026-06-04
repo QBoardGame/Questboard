@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SUBSCRIPTION_ID } from "../constants";
-import { isDev, sleep } from "lib/utils";
-import { log } from "lib/log";
+import { isDev, sleep } from "../../../lib/utils";
+import { log } from "../../../lib/log";
 
 async function openSubscribeWindow() {
   if (isDev) {

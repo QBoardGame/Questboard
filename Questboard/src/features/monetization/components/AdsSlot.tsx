@@ -1,5 +1,5 @@
-import { useOverwolfAds, type UseOverwolfAds } from "../hooks/useOverwolfAds";
-import "./styles/AdsSlot.css";
+import { useOverwolfAds, type UseOverwolfAds } from '../hooks/useOverwolfAds';
+import './styles/AdsSlot.css';
 
 /**
  * Renders an ads slot component.
@@ -19,25 +19,33 @@ import "./styles/AdsSlot.css";
  * @test How to test: https://overwolf.github.io/start/test-your-app/how-to-test-your-app#testing-ad-visibility
  * @returns The rendered ads slot component.
  */
-export function AdsSlot(size: UseOverwolfAds) {
-  const { containerRef, isPlaying } = useOverwolfAds(size);
+
+type AdsSlotProps = UseOverwolfAds & {
+  onAvailable?: (available: boolean) => void;
+};
+export function AdsSlot({ width, height, onAvailable }: AdsSlotProps) {
+  const { containerRef, isPlaying } = useOverwolfAds(
+    { width, height },
+    onAvailable,
+  );
   return (
     <div
-      className='ads-slot'
+      className="ads-slot"
       ref={containerRef}
       style={{
-        minWidth: size.width,
-        minHeight: size.height,
-        maxWidth: size.width,
-        maxHeight: size.height,
+        minWidth: width,
+        minHeight: height,
+        maxWidth: width,
+        maxHeight: height,
       }}
     >
       {isPlaying ? null : (
         <>
-          <div className='ads-slot__placeholder' />
+          <div className="ads-slot__placeholder" />
           <h1>Ads Slot 400x300</h1>
         </>
       )}
     </div>
   );
 }
+

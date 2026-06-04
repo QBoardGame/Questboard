@@ -1,8 +1,8 @@
 import type { OwAd } from "@overwolf/types/owads";
 import { useEffect, useRef, useState } from "react";
 import { INJECTED_OWADS_ID, OWADS_URL } from "../constants";
-import { log } from "lib/log";
-import { isDev, sleep } from "lib/utils";
+import { log } from "../../../lib/log";
+import { isDev, sleep } from "../../../lib/utils";
 
 declare global {
   interface Window {
@@ -12,7 +12,8 @@ declare global {
 
 export type UseOverwolfAds = Record<"width" | "height", number>;
 
-export function useOverwolfAds({ width, height }: UseOverwolfAds) {
+
+export function useOverwolfAds({ width, height }: UseOverwolfAds,onAvailable?: (available: boolean) => void) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -41,7 +42,7 @@ export function useOverwolfAds({ width, height }: UseOverwolfAds) {
         size: { width, height },
       });
 
-      owAds.addEventListener("player_loaded ", () => {
+      owAds.addEventListener("player_loaded", () => {
         log(
           "player_loaded",
           "src/features/monetization/hooks/useOverwolfAds.ts",
@@ -51,6 +52,7 @@ export function useOverwolfAds({ width, height }: UseOverwolfAds) {
 
       owAds.addEventListener("play", () => {
         setIsPlaying(true);
+        onAvailable?.(true);
       });
 
       // owAds.addEventListener('display_ad_loaded', () => {
@@ -68,6 +70,7 @@ export function useOverwolfAds({ width, height }: UseOverwolfAds) {
       owAds.addEventListener("error", async () => {
         await sleep(1000);
         setIsPlaying(false);
+        onAvailable?.(false);
       });
     }
 
@@ -90,7 +93,7 @@ export function useOverwolfAds({ width, height }: UseOverwolfAds) {
         owAds?.removeEventListener(event, () => {});
       });
     };
-  }, [width, height]);
+  }, [width, height,onAvailable]);
 
   return {
     isLoading,

@@ -1,73 +1,63 @@
 {
-  "name": "questboard",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@reduxjs/toolkit": "^2.11.2",
-    "cra-template-overwolf-typescript-redux": "3.2.1",
-    "i18next": "^23.16.8",
-    "overwolf-hooks": "^4.1.5",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-i18next": "^14.1.3",
-    "react-redux": "^9.2.0",
-    "react-scripts": "^5.0.1",
-    "web-vitals": "^3.5.2"
-  },
+  "name": "generic-sample-app",
+  "author": "Overwolf",
+  "version": "0.0.1",
+  "description": "",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "start-remote-server": "redux-devtools --hostname=localhost --port=8081 --open",
-    "format": "prettier --write src/**/*.ts{,x}",
-    "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
-    "pre-build": "node scripts/update-manifest.js",
-    "post-build": "node scripts/create-production-overwolf-build && copyfiles public/manifest.json build",
-    "package-overwolf": "cd build && tar -acf ../package.v$npm_package_version.zip * && cd -",
-    "build:overwolf": "npm run pre-build && npm run build && npm run post-build && npm run package-overwolf"
+    "start": "webpack --watch --mode=development",
+    "build": "webpack --config webpack.config.js",
+    "lint": "eslint src/**"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
+  "license": "ISC",
   "devDependencies": {
-    "@overwolf/types": "^3.24.10",
-    "@redux-devtools/cli": "^4.0.4",
-    "@redux-devtools/remote": "^0.9.5",
-    "@semantic-release/git": "^10.0.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^14.3.1",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^20.19.41",
-    "@types/react": "^18.3.28",
-    "@types/react-dom": "^18.3.7",
-    "@types/react-redux": "^7.1.34",
-    "@types/remote-redux-devtools": "^0.5.8",
-    "autoprefixer": "^10.4.19",
-    "copyfiles": "^2.4.1",
-    "prettier": "^3.8.3",
-    "semantic-release": "^22.0.12",
-    "tailwindcss": "^3.4.4",
-    "typescript": "^5.9.3"
+    "@overwolf/types": "^3.23.1",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/events": "^3.0.0",
+    "@types/node": "^25.9.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@typescript-eslint/eslint-plugin": "^5.44.0",
+    "@typescript-eslint/parser": "^5.44.0",
+    "autoprefixer": "^10.5.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^7.1.4",
+    "eslint": "^8.28.0",
+    "eslint-config-overwolf": "^0.1.0",
+    "eslint-config-overwolf-ts": "^0.1.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsdoc": "^48.5.0",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.31.11",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-standard": "^5.0.0",
+    "html-webpack-plugin": "^5.5.0",
+    "postcss": "^8.5.15",
+    "postcss-loader": "^8.2.1",
+    "prettier": "^2.8.0",
+    "sass": "^1.56.1",
+    "sass-loader": "^13.2.0",
+    "style-loader": "^3.3.1",
+    "tailwindcss": "^4.3.0",
+    "ts-loader": "^9.4.1",
+    "typescript": "^4.9.3",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0"
   },
-  "homepage": ".",
-  "overrides": {
-    "typescript": "^5.9.3"
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.12.0",
+    "events": "^3.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^9.3.0",
+    "recharts": "^3.8.1",
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.8.0",
+    "typescript-logging": "^2.0.2",
+    "typescript-logging-category-style": "^2.0.2"
   }
 }
