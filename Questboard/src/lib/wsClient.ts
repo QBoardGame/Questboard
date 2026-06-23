@@ -1,12 +1,13 @@
-import { apiClient } from "./apiClient";
-import { tokenStorage } from "./tokenStorage";
-import { log } from "./log";
-import type { GameEventPayload } from "./gameEvents";
+import { apiClient } from './apiClient';
+import { tokenStorage } from './tokenStorage';
+import { log } from './log';
+import type { GameEventPayload } from './gameEvents';
 
-const WS_BASE = "ws://localhost:8080/ws/game-events";
+const WS_BASE = 'ws://localhost:8080/ws/game-events';
 const RECONNECT_DELAY_MS = 3000;
 
 class WebSocketClient {
+  private isOnline = navigator.onLine;
   private ws: WebSocket | null = null;
   private reconnectTimeout: number | null = null;
   private reconnectAttempts = 0;
@@ -14,128 +15,231 @@ class WebSocketClient {
   private isRefreshing = false;
   private pendingSendQueue: Array<Record<string, unknown>> = [];
 
+  constructor() {
+    window.addEventListener('online', this.handleOnline);
+    window.addEventListener('offline', this.handleOffline);
+  }
+
+  private handleOnline = () => {
+    this.isOnline = true;
+
+    log('Network ONLINE - reconnecting WebSocket', 'wsClient', 'network');
+
+    // immediate reconnect (no waiting for backoff timer)
+    void this.connect().catch(() => this.scheduleReconnect());
+  };
+
+  private handleOffline = () => {
+    this.isOnline = false;
+    this.reconnectAttempts = 0;
+
+    log('Network OFFLINE - stopping reconnect attempts', 'wsClient', 'network');
+
+    this.disconnect();
+  };
+
   connect(): Promise<void> {
     if (this.connectPromise) {
       return this.connectPromise;
     }
 
-    this.connectPromise = new Promise((resolve, reject) => {
+    this.connectPromise = new Promise(async (resolve, reject) => {
+      const cleanup = () => {
+        this.connectPromise = null;
+      };
 
-      try {
-        const accessToken = tokenStorage.getAccessToken();
+      const createConnection = async (
+        retryAfterRefresh = true,
+      ): Promise<void> => {
+        try {
+          let accessToken = tokenStorage.getAccessToken();
 
-        const url = accessToken
-          ? `${WS_BASE}?access_token=${encodeURIComponent(accessToken)}`
-          : WS_BASE;
+          // No access token -> try refresh first
+          if (!accessToken) {
+            log(
+              'No access token found. Refreshing before WS connect',
+              'src/lib/wsClient.ts',
+              'connect',
+            );
 
-        this.ws = new WebSocket(url);
+            accessToken = await apiClient.refreshToken();
 
-        const cleanup = () => {
-          this.connectPromise = null;
-        };
+            if (!accessToken) {
+              throw new Error('Unable to refresh access token');
+            }
 
-        const openHandler = () => {
-          cleanup();
-          this.reconnectAttempts = 0;
-          log(`WebSocket connected: ${url}`, "src/lib/wsClient.ts", "connect");
-          try {
-            // eslint-disable-next-line no-console
-            console.info("WebSocket open:", url);
-          } catch (e) {
-            /* ignore */
-          }
-          this.flushSendQueue();
-          resolve();
-        };
-
-        const errorHandler = (ev: Event) => {
-          cleanup();
-          log(`WebSocket error: ${ev}`, "src/lib/wsClient.ts", "connect");
-          try {
-            // eslint-disable-next-line no-console
-            console.error("WebSocket error:", ev);
-            // eslint-disable-next-line no-console
-            console.log("WebSocket error (console.log):", ev);
-          } catch (e) {
-            /* ignore */
-          }
-          reject(ev);
-        };
-
-        const closeHandler = (ev?: CloseEvent) => {
-          cleanup();
-          log("WebSocket closed", "src/lib/wsClient.ts", "connect");
-          try {
-            // eslint-disable-next-line no-console
-            console.info("WebSocket closed:", ev?.code, ev?.reason);
-          } catch (e) {
-            /* ignore */
+            tokenStorage.setAccessToken(accessToken);
           }
 
-          if (this.isAuthCloseEvent(ev)) {
-            void this.refreshAuthAndReconnect();
-          } else {
-            this.scheduleReconnect();
-          }
-        };
+          const url = `${WS_BASE}?access_token=${encodeURIComponent(
+            accessToken,
+          )}`;
 
-        this.ws.addEventListener("open", openHandler);
-        this.ws.addEventListener("error", errorHandler);
-        this.ws.addEventListener("close", closeHandler);
+          this.ws = new WebSocket(url);
 
-        this.ws.addEventListener("message", (msg) => {
-          try {
-            const data = JSON.parse(msg.data);
-            log(`WS message: ${JSON.stringify(data)}`, "src/lib/wsClient.ts", "message");
+          const openHandler = () => {
+            cleanup();
+            this.reconnectAttempts = 0;
 
-            if (this.isWebSocketAuthMessage(data)) {
-              log("WebSocket auth failure detected, refreshing token and reconnecting", "src/lib/wsClient.ts", "message");
+            log(
+              `WebSocket connected: ${url}`,
+              'src/lib/wsClient.ts',
+              'connect',
+            );
+
+            try {
+              // eslint-disable-next-line no-console
+              console.info('WebSocket open:', url);
+            } catch {
+              /* ignore */
+            }
+
+            this.flushSendQueue();
+            resolve();
+          };
+
+          const errorHandler = async (ev: Event) => {
+            log(`WebSocket connection error`, 'src/lib/wsClient.ts', 'connect');
+
+            try {
+              // eslint-disable-next-line no-console
+              console.error('WebSocket error:', ev);
+            } catch {
+              /* ignore */
+            }
+
+            // Try a token refresh once on connection failure
+            if (retryAfterRefresh) {
+              try {
+                const refreshedToken = await apiClient.refreshToken();
+
+                if (refreshedToken) {
+                  tokenStorage.setAccessToken(refreshedToken);
+
+                  cleanup();
+
+                  if (this.ws) {
+                    this.ws.close();
+                    this.ws = null;
+                  }
+
+                  await createConnection(false);
+                  return;
+                }
+              } catch {
+                /* ignore */
+              }
+            }
+
+            cleanup();
+            reject(ev);
+          };
+
+          const closeHandler = (ev?: CloseEvent) => {
+            cleanup();
+
+            log(
+              `WebSocket closed (${ev?.code})`,
+              'src/lib/wsClient.ts',
+              'connect',
+            );
+
+            try {
+              // eslint-disable-next-line no-console
+              console.info('WebSocket closed:', ev?.code, ev?.reason);
+            } catch {
+              /* ignore */
+            }
+
+            if (this.isAuthCloseEvent(ev)) {
               void this.refreshAuthAndReconnect();
               return;
             }
 
-            // also output raw message for easier console inspection
+            this.scheduleReconnect();
+          };
+
+          this.ws.addEventListener('open', openHandler);
+          this.ws.addEventListener('error', errorHandler);
+          this.ws.addEventListener('close', closeHandler);
+
+          this.ws.addEventListener('message', (msg) => {
             try {
-              // eslint-disable-next-line no-console
-              console.debug("WS RAW MESSAGE:", msg.data);
-              // eslint-disable-next-line no-console
-              console.log("WebSocket message:", data);
-            } catch (e) {
-              /* ignore console errors */
+              const data = JSON.parse(msg.data);
+
+              log(
+                `WS message: ${JSON.stringify(data)}`,
+                'src/lib/wsClient.ts',
+                'message',
+              );
+
+              if (this.isWebSocketAuthMessage(data)) {
+                log(
+                  'WebSocket auth failure detected, refreshing token and reconnecting',
+                  'src/lib/wsClient.ts',
+                  'message',
+                );
+
+                void this.refreshAuthAndReconnect();
+                return;
+              }
+
+              try {
+                // eslint-disable-next-line no-console
+                console.debug('WS RAW MESSAGE:', msg.data);
+                this.processMessage(data);
+                // eslint-disable-next-line no-console
+                console.log('WebSocket message:', data);
+              } catch {
+                /* ignore */
+              }
+            } catch {
+              log(
+                `WS raw message: ${msg.data}`,
+                'src/lib/wsClient.ts',
+                'message',
+              );
+
+              try {
+                // eslint-disable-next-line no-console
+                console.debug('WS RAW MESSAGE (parse failed):', msg.data);
+
+                // eslint-disable-next-line no-console
+                console.log('WebSocket raw message:', msg.data);
+              } catch {
+                /* ignore */
+              }
             }
-          } catch (e) {
-            log(`WS raw message: ${msg.data}`, "src/lib/wsClient.ts", "message");
-            try {
-              // eslint-disable-next-line no-console
-              console.debug("WS RAW MESSAGE (parse failed):", msg.data);
-              // eslint-disable-next-line no-console
-              console.log("WebSocket raw message:", msg.data);
-            } catch (err) {
-              /* ignore */
-            }
-          }
-        });
-      } catch (err) {
-        reject(err);
-      }
+          });
+        } catch (err) {
+          cleanup();
+          reject(err);
+        }
+      };
+
+      await createConnection();
     });
 
     return this.connectPromise;
   }
 
   private scheduleReconnect() {
-    if (this.reconnectTimeout) return;
-    this.reconnectAttempts++;
-    const delay = RECONNECT_DELAY_MS * Math.min(this.reconnectAttempts, 6);
-    log(`Scheduling reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`, "src/lib/wsClient.ts", "scheduleReconnect");
-    try {
-      // eslint-disable-next-line no-console
-      console.info(`WS reconnect scheduled (attempt ${this.reconnectAttempts}) in ${delay}ms`);
-    } catch (e) {
-      /* ignore */
+    if (!this.isOnline) {
+      log('Skip reconnect - user is offline', 'wsClient', 'scheduleReconnect');
+      return;
     }
+
+    if (this.reconnectTimeout) return;
+
+    this.reconnectAttempts++;
+
+    const delay = RECONNECT_DELAY_MS * Math.min(this.reconnectAttempts, 6);
+
     this.reconnectTimeout = window.setTimeout(() => {
       this.reconnectTimeout = null;
+
+      if (!this.isOnline) return;
+
       this.connect().catch(() => this.scheduleReconnect());
     }, delay);
   }
@@ -160,11 +264,19 @@ class WebSocketClient {
 
     this.isRefreshing = true;
     try {
-      log("Refreshing access token for WebSocket authentication", "src/lib/wsClient.ts", "refreshAuthAndReconnect");
+      log(
+        'Refreshing access token for WebSocket authentication',
+        'src/lib/wsClient.ts',
+        'refreshAuthAndReconnect',
+      );
       const refreshedAccessToken = await apiClient.refreshToken();
 
       if (!refreshedAccessToken) {
-        log("WebSocket refresh failed, clearing tokens", "src/lib/wsClient.ts", "refreshAuthAndReconnect");
+        log(
+          'WebSocket refresh failed, clearing tokens',
+          'src/lib/wsClient.ts',
+          'refreshAuthAndReconnect',
+        );
         tokenStorage.clearTokens();
         return;
       }
@@ -173,7 +285,11 @@ class WebSocketClient {
       this.disconnect();
       await this.connect();
     } catch (error) {
-      log(`WebSocket refresh error: ${error}`, "src/lib/wsClient.ts", "refreshAuthAndReconnect");
+      log(
+        `WebSocket refresh error: ${error}`,
+        'src/lib/wsClient.ts',
+        'refreshAuthAndReconnect',
+      );
       this.scheduleReconnect();
     } finally {
       this.isRefreshing = false;
@@ -189,24 +305,34 @@ class WebSocketClient {
       return true;
     }
 
-    const reason = String(ev.reason ?? "").toLowerCase();
-    return reason.includes("403") || reason.includes("forbidden") || reason.includes("unauthorized");
+    const reason = String(ev.reason ?? '').toLowerCase();
+    return (
+      reason.includes('403') ||
+      reason.includes('forbidden') ||
+      reason.includes('unauthorized')
+    );
   }
 
   private isWebSocketAuthMessage(data: unknown): boolean {
-    if (!data || typeof data !== "object") {
+    if (!data || typeof data !== 'object') {
       return false;
     }
 
     const payload = data as Record<string, unknown>;
     const status = payload.status;
-    const message = String(payload.message ?? payload.error ?? "").toLowerCase();
+    const message = String(
+      payload.message ?? payload.error ?? '',
+    ).toLowerCase();
 
-    if (status === 403 || status === "403") {
+    if (status === 403 || status === '403') {
       return true;
     }
 
-    return message.includes("403") || message.includes("forbidden") || message.includes("unauthorized");
+    return (
+      message.includes('403') ||
+      message.includes('forbidden') ||
+      message.includes('unauthorized')
+    );
   }
 
   disconnect() {
@@ -223,7 +349,11 @@ class WebSocketClient {
 
   sendEvent(payload: Record<string, unknown>) {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      log("WebSocket not open - queuing event", "src/lib/wsClient.ts", "sendEvent");
+      log(
+        'WebSocket not open - queuing event',
+        'src/lib/wsClient.ts',
+        'sendEvent',
+      );
       this.pendingSendQueue.push(payload);
 
       if (!this.connectPromise) {
@@ -241,19 +371,75 @@ class WebSocketClient {
       // log outgoing payloads to console for debugging
       try {
         // eslint-disable-next-line no-console
-        console.debug("WS SEND:", raw);
+        console.debug('WS SEND:', raw);
       } catch (e) {
         /* ignore */
       }
       return true;
     } catch (err) {
-      log(`Failed to send WS message: ${err}`, "src/lib/wsClient.ts", "sendEvent");
+      log(
+        `Failed to send WS message: ${err}`,
+        'src/lib/wsClient.ts',
+        'sendEvent',
+      );
       return false;
     }
   }
 
   sendGameEvent(payload: GameEventPayload) {
     return this.sendEvent(payload);
+  }
+
+  private processMessage(data: any) {
+    switch (data.type) {
+      case 'wallet_update':
+        overwolf.windows.sendMessage(
+          'desktop',
+          'wallet_update',
+          {
+            coinBalance: data.coinBalance,
+          },
+          (result) => {
+            console.log('SEND RESULT:', result);
+          },
+        );
+        break;
+
+      // case 'progress_update':
+      //   console.log('ENTERED progress_update CASE', data);
+      //   overwolf.windows.sendMessage(
+      //     'desktop',
+      //     'progress_update',
+      //     data.updates,
+      //     (result) => {
+      //       console.log('PROGRESS_UPDATE SENT:', result);
+      //     },
+      //   );
+      //   break;
+
+      case 'progress_update':
+        console.log('ENTERED progress_update CASE', data);
+
+        overwolf.windows.sendMessage(
+          'desktop',
+          'progress_update',
+          {
+            updates: data.updates,
+          },
+          (result) => {
+            console.log('PROGRESS_UPDATE SENT:', result);
+          },
+        );
+        break;
+
+      case 'game_started':
+        // gameStore.getState().setGame(data.game);
+        break;
+
+      case 'game_finished':
+        // gameStore.getState().clearGame();
+        break;
+    }
   }
 }
 

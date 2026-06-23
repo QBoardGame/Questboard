@@ -3,12 +3,11 @@
   "extends": "./tsconfig.base.json",
   "exclude": ["test", "**/*.spec.ts"],
   "compilerOptions": {
+    "rootDir": "./src",
     "jsx": "react-jsx",
+    "ignoreDeprecations": "6.0",
     "moduleResolution": "node",
-    "types": [
-      "@overwolf/types",
-      "node"
-    ],
+    "types": ["@overwolf/types", "node"],
     "lib": ["ES2021", "DOM"]
   }
 }

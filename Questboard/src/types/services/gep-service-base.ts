@@ -86,6 +86,7 @@ export abstract class GEPServiceBase extends EventEmitter<GEPEvents> {
    */
   public abstract onGameLaunched(
     requiredFeatures?: string[],
+    payload?: string[],
   ): Promise<GEPEnabledFeatures | undefined>;
 
   /**

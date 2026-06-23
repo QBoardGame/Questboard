@@ -23,22 +23,36 @@ export type UserChallengeProgressDto = {
   id: string;
   userId: string;
   challengeId: string;
+
+  challengeType: "DAILY" | "WEEKLY" | string;
+
+  title: string;
+  description: string;
+
   progress: number;
   targetValue: number;
+
   completed: boolean;
   claimed: boolean;
+
   completedAt?: string | null;
   updatedAt?: string | null;
+
+  endsAt?: string | null;
+
+  eventType: string;
+  rewardType?: string | null;
+  rewardValue?: string | null;
 };
 
 export type ChallengeWithProgressDto = {
-  challenge: ChallengeDefinitionDto;
-  progress: UserChallengeProgressDto | null;
+  // challenge: ChallengeDefinitionDto;
+  progress: UserChallengeProgressDto;
 };
 
 export async function getGameChallenges(gameId: number, type?: string) {
   const query = type ? `?type=${encodeURIComponent(type)}` : "";
-  return apiClient.get<ChallengeWithProgressDto[]>(`/challenges/games/${gameId}${query}`);
+  return apiClient.get<UserChallengeProgressDto[]>(`/challenges/games/${gameId}${query}`);
 }
 
 export async function getStreamerChallenges() {

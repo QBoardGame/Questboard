@@ -30,11 +30,10 @@
 //   },
 // };
 
-
 let accessToken: string | null = null;
 
-const ACCESS_TOKEN_KEY = "questboard_access_token";
-const REFRESH_TOKEN_KEY = "questboard_refresh_token";
+const ACCESS_TOKEN_KEY = 'questboard_access_token';
+const REFRESH_TOKEN_KEY = 'questboard_refresh_token';
 
 export const tokenStorage = {
   setTokens(access: string, refresh: string) {
@@ -44,12 +43,16 @@ export const tokenStorage = {
     window.localStorage.setItem(REFRESH_TOKEN_KEY, refresh);
   },
 
-  getAccessToken(): string | null {
-    if (accessToken) return accessToken;
+  // getAccessToken(): string | null {
+  //   if (accessToken) return accessToken;
 
-    const stored = window.localStorage.getItem(ACCESS_TOKEN_KEY);
-    accessToken = stored;
-    return stored;
+  //   const stored = window.localStorage.getItem(ACCESS_TOKEN_KEY);
+  //   accessToken = stored;
+  //   return stored;
+  // },
+
+  getAccessToken(): string | null {
+    return localStorage.getItem(ACCESS_TOKEN_KEY);
   },
 
   getRefreshToken(): string | null {
@@ -65,6 +68,10 @@ export const tokenStorage = {
     accessToken = null;
     window.localStorage.removeItem(ACCESS_TOKEN_KEY);
     window.localStorage.removeItem(REFRESH_TOKEN_KEY);
+  },
+
+  clearAccessToken(){
+    window.localStorage.removeItem(ACCESS_TOKEN_KEY)
   },
 
   hasRefreshToken(): boolean {

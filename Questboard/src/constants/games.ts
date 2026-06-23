@@ -5,10 +5,6 @@ export type GameInfo = {
   platform?: string;
   image?: string;
   logo?: string;
-  tasks: {
-    daily: string[];
-    weekly: string[];
-  };
 };
 
 export const GAMES: GameInfo[] = [
@@ -19,33 +15,21 @@ export const GAMES: GameInfo[] = [
     platform: "Overwolf",
     image: "/images/games/valorant.jpg",
     logo: "/images/games/logo/valorant logo.jpg",
-    tasks: {
-      daily: ["Get 5 kills", "Play one ranked match"],
-      weekly: ["Complete 10 matches", "Win 3 ranked matches"],
-    },
   },
   {
-    id: 9898,
-    slug: "warzone",
-    title: "Warzone",
-    platform: "Overwolf",
-    image: "/images/games/warzone.jpg",
-    logo: "/images/games/logo/valorant logo.jpg",
-    tasks: {
-      daily: ["Finish 1 match", "Get 10 kills"],
-      weekly: ["Finish 15 encounters", "Reach top 100"],
-    },
-  },
-  {
-    id: 21566,
-    slug: "apex",
-    title: "Apex Legends",
+    id: 22730,
+    slug: "coutnterStrike2",
+    title: "Counter Strike 2",
     platform: "PC",
-    image: "/images/games/apexLegends.jpg",
-    logo: "/images/games/logo/valorant logo.jpg",
-    tasks: {
-      daily: ["Get 3 assists", "Survive 5 minutes"],
-      weekly: ["Top 5 in 5 matches", "Deal 2000 damage"],
-    },
+    image: "/images/games/counterstrike2image.jpg",
+    logo: "/images/games/logo/counterstrike2logo.jpg",
+  },
+  {
+    id: 10844,
+    slug: "overwatch",
+    title: "Overwatch 2",
+    platform: "PC",
+    image: "/images/games/overwatch.jpg",
+    logo: "/images/games/logo/overwatch 2 logo.jpg",
   },
 ];

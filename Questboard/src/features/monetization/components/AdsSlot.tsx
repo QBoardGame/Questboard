@@ -42,7 +42,7 @@ export function AdsSlot({ width, height, onAvailable }: AdsSlotProps) {
       {isPlaying ? null : (
         <>
           <div className="ads-slot__placeholder" />
-          <h1>Ads Slot 400x300</h1>
+          {/* <h1>Ads Slot 400x300</h1> */}
         </>
       )}
     </div>

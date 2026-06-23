@@ -57,6 +57,7 @@ export const Router: React.FC<RouterProps> = ({
         username: credentials.username,
         email: credentials.email,
         password: credentials.password,
+        authType: credentials.authType,
       });
 
       if (response.accessToken && response.refreshToken) {
@@ -70,21 +71,92 @@ export const Router: React.FC<RouterProps> = ({
     }
   };
 
+  const openInBrowser = (url: string) => {
+    if (window?.overwolf?.utils?.openUrlInDefaultBrowser) {
+      window.overwolf.utils.openUrlInDefaultBrowser(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+  // const handleGoogleLogin = () => {
+  //   console.log('Google login requested');
+  // };
+
+  // const handleGoogleSignup = () => {
+  //   console.log('Google signup requested');
+  // };
+
+  // const handleGoogleLogin = () => {
+  //   try {
+  //     const url = `${process.env.API_URL}/auth/google?mode=login`;
+  //     openInBrowser(url);
+  //   } catch (error) {
+  //     console.error('Google login failed to start:', error);
+  //   }
+  // };
+
+  // const handleGoogleSignup = () => {
+  //   try {
+  //     const url = `${process.env.API_URLL}/auth/google?mode=register`;
+  //     openInBrowser(url);
+  //   } catch (error) {
+  //     console.error('Google signup failed to start:', error);
+  //   }
+  // };
+
   const handleGoogleLogin = () => {
-    console.log('Google login requested');
+    try {
+      // const url = `${process.env.API_URL}/auth/google/start?redirect=aurum://auth/callback`;
+      const url = `${
+        process.env.API_URL
+      }/auth/google/start?redirect=${encodeURIComponent(
+        'http://127.0.0.1:3000/auth/google/callback',
+      )}`;
+      // window.overwolf?.utils?.openUrlInDefaultBrowser(url) ??
+      //   window.open(url, '_blank');
+      if (window.overwolf?.utils?.openUrlInDefaultBrowser) {
+        window.overwolf.utils.openUrlInDefaultBrowser(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    } catch (error) {
+      console.error('Google login failed:', error);
+    }
   };
 
   const handleGoogleSignup = () => {
-    console.log('Google signup requested');
+    try {
+      // const url = `${process.env.API_URL}/auth/google/start?redirect=aurum://auth/callback`;
+      const url = `${
+        process.env.API_URL
+      }/auth/google/start?redirect=${encodeURIComponent(
+        'http://127.0.0.1:3000/auth/google/callback',
+      )}`;
+
+      // window.overwolf?.utils?.openUrlInDefaultBrowser(url) ??
+      //   window.open(url, '_blank');
+      if (window.overwolf?.utils?.openUrlInDefaultBrowser) {
+        window.overwolf.utils.openUrlInDefaultBrowser(url);
+      } else {
+        window.open(url, '_blank');
+      }
+    } catch (error) {
+      console.error('Google signup failed:', error);
+    }
+  };
+
+  const handleForgotPassword = () => {
+    console.log('Forgot password button clicked');
   };
 
   const renderPage = (): ReactNode => {
     switch (currentRoute) {
       case 'home':
       case 'dashboard':
-        return <Dashboard />;
-      case 'games':
-        return <GamesContent />;
+        return <Dashboard onNavigate={onNavigate} />;
+      // case 'games':
+      //   return <GamesContent />;
       case 'store':
         return (
           <ComingSoonPage
@@ -116,6 +188,7 @@ export const Router: React.FC<RouterProps> = ({
             onGoogleLogin={handleGoogleLogin}
             onSwitchMode={() => onNavigate('register')}
             onLogin={handleLogin}
+            onForgotPassword={handleForgotPassword}
           />
         );
       case 'register':

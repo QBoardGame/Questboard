@@ -17,9 +17,13 @@ export const Sidebar = ({
 }: SidebarProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const profile = useSelector((state: RootReducer) => state.profile.data);
-  const username =
-    profile?.username || localStorage.getItem('username') || 'You';
-  const avatar = profile?.avatarUrl || localStorage.getItem('avatar') || '';
+  console.log('Sidebar profile:', profile);
+  // const username =
+  //   profile?.username || localStorage.getItem('username') || 'You';
+  // const avatar = profile?.avatarUrl || localStorage.getItem('avatar') || '';
+  // const role = profile?.role?.toUpperCase();
+  const username = profile?.username;
+  const avatar = profile?.avatarUrl;
   const role = profile?.role?.toUpperCase();
 
   const items: Array<{
@@ -38,16 +42,16 @@ export const Sidebar = ({
         </svg>
       ),
     },
-    {
-      key: 'games',
-      label: 'Games',
-      aria: 'Games',
-      icon: (
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M18 3h-2.5a1.5 1.5 0 0 0-1.24.64L11 8 9.74 6.64A1.5 1.5 0 0 0 8.5 6H6a2 2 0 0 0-2 2v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3z" />
-        </svg>
-      ),
-    },
+    // {
+    //   key: 'games',
+    //   label: 'Games',
+    //   aria: 'Games',
+    //   icon: (
+    //     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+    //       <path d="M18 3h-2.5a1.5 1.5 0 0 0-1.24.64L11 8 9.74 6.64A1.5 1.5 0 0 0 8.5 6H6a2 2 0 0 0-2 2v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3z" />
+    //     </svg>
+    //   ),
+    // },
     {
       key: 'store',
       label: 'Store',
@@ -152,7 +156,7 @@ export const Sidebar = ({
             />
           ) : (
             <div className="w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center font-semibold text-sm border border-slate-700">
-              {username.charAt(0).toUpperCase()}
+              {username?.charAt(0).toUpperCase()}
             </div>
           )}
 

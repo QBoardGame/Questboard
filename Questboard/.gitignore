@@ -2,3 +2,5 @@ node_modules/
 dist/
 /test-reports/
 coverage/
+
+.env

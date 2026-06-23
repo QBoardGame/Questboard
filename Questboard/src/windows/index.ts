@@ -24,17 +24,20 @@ import {
   WindowManagerServiceBase,
   WindowManagerToken,
 } from '../types/services/window-manager-service-base';
+import { AuthService } from '../overwolf-platform/services/AuthService';
 
 container.registerSingleton(GEPToken, GEPService);
 container.registerSingleton(SettingsToken, SettingsService);
 container.registerSingleton(GameDetectionToken, GameDetectionService);
 container.registerSingleton(WindowManagerToken, WindowManagerService);
 container.registerSingleton(CommunicationHostToken, CommunicationHostService);
+container.registerSingleton(AuthService, AuthService);
 
 // -----------------------------------------------------------------------------
 @injectable()
 export class IndexController {
   private readonly inGameName = 'in-game';
+  private currentGameContext: any;
 
   public constructor(
     @inject(GEPToken)
@@ -45,6 +48,8 @@ export class IndexController {
     private readonly windowManagerService: WindowManagerServiceBase,
     @inject(CommunicationHostToken)
     private readonly communicationBusHostService: CommunicationHostServiceBase,
+    @inject(AuthService)
+    private readonly authService: AuthService,
   ) {
     this.communicationBusHostService.initializeCommunicationBusHost();
     this.init();
@@ -54,6 +59,7 @@ export class IndexController {
    * Initializes this app
    */
   public init(): void {
+    this.authService.startAuthServer();
     overwolf.windows.obtainDeclaredWindow('desktop', (result) => {
       if (result.success) {
         overwolf.windows.restore(result.window.id);
@@ -85,10 +91,34 @@ export class IndexController {
     this.gameDetectionService.start();
   }
 
-  private connectInGame(event: CommunicationBustHostPayload) {
+  // private connectInGame(event: CommunicationBustHostPayload) {
+  //   const inGameConnector = event.connector;
+  //   inGameConnector.connectionReceived(container);
+
+  //   console.log('currentGameContext', this.currentGameContext);
+
+  //   if (this.currentGameContext) {
+  //     this.communicationBusHostService.sendMessage('in-game', {
+  //       type: 'GAME_CONTEXT',
+  //       payload: this.currentGameContext,
+  //     });
+  //   }
+  // }
+
+  private connectInGame = (event: CommunicationBustHostPayload) => {
     const inGameConnector = event.connector;
+
     inGameConnector.connectionReceived(container);
-  }
+
+    console.log('currentGameContext', this.currentGameContext);
+
+    if (this.currentGameContext) {
+      this.communicationBusHostService.sendMessage('in-game', {
+        type: 'GAME_CONTEXT',
+        payload: this.currentGameContext,
+      });
+    }
+  };
 
   private onGameStart(gameLaunch: GameLaunchedPayload) {
     console.log(`Game was launched: ${gameLaunch.name} ${gameLaunch.id}`);
@@ -97,10 +127,26 @@ export class IndexController {
     const gameConfig = gameData[gameLaunch.id];
     // If the detected game is configured for events
     if (gameConfig) {
+      this.currentGameContext = {
+        gameId: gameLaunch.id,
+        gameName: gameLaunch.name,
+        gameSlug: gameLaunch.name.toLowerCase(),
+      };
       // Open the in-game window
       this.windowManagerService.openWindow(this.inGameName);
+
       // Run the game launched logic of the gep service
       this.gepService.onGameLaunched(gameConfig.interestedInFeatures);
+
+      console.log('SENDING GAME CONTEXT', gameLaunch.name, gameLaunch.id);
+      this.communicationBusHostService.sendMessage('in-game', {
+        type: 'GAME_CONTEXT',
+        payload: {
+          gameId: gameLaunch.id,
+          gameName: gameLaunch.name,
+          gameSlug: gameLaunch.name.toLowerCase(),
+        },
+      });
     }
   }
 
@@ -115,6 +161,14 @@ export class IndexController {
       });
       // Run game closed cleanup of the gep service
       this.gepService.onGameClosed();
+      this.communicationBusHostService.sendMessage('in-game', {
+        type: 'GAME_CONTEXT',
+        payload: {
+          gameId: gameClosed.id,
+          gameName: gameClosed.name,
+          gameSlug: gameClosed.name.toLowerCase(),
+        },
+      });
     }
   }
 

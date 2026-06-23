@@ -1,7 +1,7 @@
-import { log } from "./log";
-import { tokenStorage } from "./tokenStorage";
+import { log } from './log';
+import { tokenStorage } from './tokenStorage';
 
-const API_BASE = "http://localhost:8080/api";
+const API_BASE = process.env.API_URL;
 
 type JsonRecord = Record<string, unknown>;
 
@@ -10,16 +10,19 @@ class ApiClient {
 
   async request<T = unknown>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<T> {
     const url = `${API_BASE}${endpoint}`;
     const accessToken = tokenStorage.getAccessToken();
 
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      ...(typeof options.headers === "object" && options.headers
+      'Content-Type': 'application/json',
+      ...(typeof options.headers === 'object' && options.headers
         ? Object.fromEntries(
-            Object.entries(options.headers).map(([key, value]) => [key, String(value)])
+            Object.entries(options.headers).map(([key, value]) => [
+              key,
+              String(value),
+            ]),
           )
         : {}),
     };
@@ -33,17 +36,20 @@ class ApiClient {
       headers,
     });
 
-    if ((response.status === 401 || response.status === 403) && endpoint !== "/auth/refresh") {
+    if (
+      (response.status === 401 || response.status === 403) &&
+      endpoint !== '/auth/refresh'
+    ) {
       log(
         `Received ${response.status} - refreshing access token`,
-        "src/lib/apiClient.ts",
-        "request"
+        'src/lib/apiClient.ts',
+        'request',
       );
 
       const refreshedAccessToken = await this.refreshAccessToken();
 
       if (!refreshedAccessToken) {
-        throw new Error("Unauthorized");
+        throw new Error('Unauthorized');
       }
 
       headers.Authorization = `Bearer ${refreshedAccessToken}`;
@@ -54,12 +60,14 @@ class ApiClient {
     }
 
     if (!response.ok) {
-      const errorDetail = await response.text().catch(() => "Unknown error");
-      throw new Error(`API request failed: ${response.status} - ${errorDetail}`);
+      const errorDetail = await response.text().catch(() => 'Unknown error');
+      throw new Error(
+        `API request failed: ${response.status} - ${errorDetail}`,
+      );
     }
 
-    const contentType = response.headers.get("content-type");
-    if (contentType?.includes("application/json")) {
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
       return response.json() as Promise<T>;
     }
 
@@ -80,27 +88,29 @@ class ApiClient {
         }
 
         const response = await fetch(`${API_BASE}/auth/refresh`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({ refreshToken }),
         });
 
         if (!response.ok) {
-          const errorDetail = await response.text().catch(() => "Unknown error");
+          const errorDetail = await response
+            .text()
+            .catch(() => 'Unknown error');
           log(
             `Token refresh failed: ${response.status} - ${errorDetail}`,
-            "src/lib/apiClient.ts",
-            "refreshAccessToken"
+            'src/lib/apiClient.ts',
+            'refreshAccessToken',
           );
           tokenStorage.clearTokens();
           return null;
         }
 
         const data = (await response.json()) as JsonRecord;
-        const newAccessToken = String(data.accessToken ?? "");
-        const newRefreshToken = String(data.refreshToken ?? "");
+        const newAccessToken = String(data.accessToken ?? '');
+        const newRefreshToken = String(data.refreshToken ?? '');
 
         if (!newAccessToken || !newRefreshToken) {
           tokenStorage.clearTokens();
@@ -112,10 +122,10 @@ class ApiClient {
       } catch (error) {
         log(
           `Token refresh error: ${error}`,
-          "src/lib/apiClient.ts",
-          "refreshAccessToken"
+          'src/lib/apiClient.ts',
+          'refreshAccessToken',
         );
-        tokenStorage.clearTokens();
+        tokenStorage.clearAccessToken();
         return null;
       } finally {
         this.refreshPromise = null;
@@ -125,29 +135,35 @@ class ApiClient {
     return this.refreshPromise;
   }
 
-  async post<T = unknown>(endpoint: string, body?: Record<string, unknown>): Promise<T> {
+  async post<T = unknown>(
+    endpoint: string,
+    body?: Record<string, unknown>,
+  ): Promise<T> {
     return this.request<T>(endpoint, {
-      method: "POST",
+      method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
     });
   }
 
   async get<T = unknown>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, {
-      method: "GET",
+      method: 'GET',
     });
   }
 
-  async put<T = unknown>(endpoint: string, body?: Record<string, unknown>): Promise<T> {
+  async put<T = unknown>(
+    endpoint: string,
+    body?: Record<string, unknown>,
+  ): Promise<T> {
     return this.request<T>(endpoint, {
-      method: "PUT",
+      method: 'PUT',
       body: body ? JSON.stringify(body) : undefined,
     });
   }
 
   async delete<T = unknown>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, {
-      method: "DELETE",
+      method: 'DELETE',
     });
   }
 
