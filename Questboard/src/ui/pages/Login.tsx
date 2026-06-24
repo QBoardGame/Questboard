@@ -173,7 +173,7 @@ export const Login = ({
           </button>
         </form>
 
-        <div className="relative my-6 flex items-center text-center">
+        {/* <div className="relative my-6 flex items-center text-center">
           <div className="absolute inset-x-0 top-1/2 h-px bg-slate-800" />
           <span className="relative inline-flex bg-slate-900 px-3 text-xs uppercase tracking-[0.2em] text-slate-500">
             Or
@@ -197,7 +197,7 @@ export const Login = ({
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
           </svg>
           Continue with Google
-        </button>
+        </button> */}
 
         <div className="mt-6 text-center">
           <p className="text-sm text-slate-400">

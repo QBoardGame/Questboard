@@ -48,8 +48,8 @@ export class IndexController {
     private readonly windowManagerService: WindowManagerServiceBase,
     @inject(CommunicationHostToken)
     private readonly communicationBusHostService: CommunicationHostServiceBase,
-    @inject(AuthService)
-    private readonly authService: AuthService,
+    // @inject(AuthService)
+    // private readonly authService: AuthService,
   ) {
     this.communicationBusHostService.initializeCommunicationBusHost();
     this.init();
@@ -59,7 +59,7 @@ export class IndexController {
    * Initializes this app
    */
   public init(): void {
-    this.authService.startAuthServer();
+    // this.authService.startAuthServer();
     overwolf.windows.obtainDeclaredWindow('desktop', (result) => {
       if (result.success) {
         overwolf.windows.restore(result.window.id);
@@ -90,20 +90,6 @@ export class IndexController {
     // Start the game detection service, kickstarting the entire events chain
     this.gameDetectionService.start();
   }
-
-  // private connectInGame(event: CommunicationBustHostPayload) {
-  //   const inGameConnector = event.connector;
-  //   inGameConnector.connectionReceived(container);
-
-  //   console.log('currentGameContext', this.currentGameContext);
-
-  //   if (this.currentGameContext) {
-  //     this.communicationBusHostService.sendMessage('in-game', {
-  //       type: 'GAME_CONTEXT',
-  //       payload: this.currentGameContext,
-  //     });
-  //   }
-  // }
 
   private connectInGame = (event: CommunicationBustHostPayload) => {
     const inGameConnector = event.connector;

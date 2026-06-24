@@ -1,7 +1,7 @@
 {
   "manifest_version": "1",
   "type": "WebApp",
-  "permissions": ["Extensions", "Hotkeys", "GameInfo", "FileSystem"],
+  "permissions": ["Extensions", "Hotkeys", "GameInfo", "FileSystem" ],
   "meta": {
     "name": "Aurum",
     "version": "0.1.0",

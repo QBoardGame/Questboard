@@ -1,108 +1,3 @@
-// import { injectable, inject } from "tsyringe";
-// import {
-//   CommunicationHostServiceBase,
-//   CommunicationHostToken,
-// } from "../../types/services/communication-host-service-base";
-
-// @injectable()
-// export class AuthService {
-//   private readonly port = 10000;
-//   private isRunning = false;
-
-//   public constructor(
-//     @inject(CommunicationHostToken)
-//     private readonly communicationBus: CommunicationHostServiceBase
-//   ) {}
-
-//   public startAuthServer(): void {
-//     if (this.isRunning) return;
-
-//     const webserver = (overwolf.web as any).webserver;
-
-//     if (!webserver) {
-//       console.error("❌ Overwolf webserver API not available");
-//       return;
-//     }
-
-//     webserver.startServer(this.port, (res: any) => {
-//       if (res?.success) {
-//         this.isRunning = true;
-//         console.log(`✅ Auth server running on port ${this.port}`);
-//       } else {
-//         console.error("❌ Auth server failed:", res?.error);
-//       }
-//     });
-
-//     this.listen();
-//   }
-
-//   private listen(): void {
-//     const webserver = (overwolf.web as any).webserver;
-
-//     if (!webserver?.onRequest?.addListener) {
-//       console.error("❌ Webserver onRequest not available");
-//       return;
-//     }
-
-//     webserver.onRequest.addListener((req: any) => {
-//       try {
-//         const fullUrl = `http://127.0.0.1${req.url}`;
-//         const url = new URL(fullUrl);
-
-//         // Only handle OAuth success callback
-//         if (url.pathname === "/auth/success") {
-//           const token = url.searchParams.get("token");
-
-//           if (!token) {
-//             console.warn("⚠️ Auth callback received but no token found");
-//             req.respond({
-//               status: 400,
-//               body: "Missing token",
-//             });
-//             return;
-//           }
-
-//           console.log("🔥 AUTH SUCCESS TOKEN RECEIVED");
-
-//           // ✅ Send into your existing communication system (BEST APPROACH)
-//           this.communicationBus.sendMessage("desktop", {
-//             type: "AUTH_SUCCESS",
-//             payload: {
-//               token,
-//             },
-//           });
-//         }
-
-//         // Always respond to avoid browser hanging
-//         req.respond({
-//           status: 200,
-//           body: "OK",
-//         });
-//       } catch (err) {
-//         console.error("❌ Auth callback error:", err);
-
-//         try {
-//           req.respond({
-//             status: 500,
-//             body: "Internal error",
-//           });
-//         } catch {}
-//       }
-//     });
-//   }
-
-//   public stopAuthServer(): void {
-//     const webserver = (overwolf.web as any).webserver;
-
-//     if (webserver?.stopServer) {
-//       webserver.stopServer(this.port, () => {
-//         this.isRunning = false;
-//         console.log("🛑 Auth server stopped");
-//       });
-//     }
-//   }
-// }
-
 import { injectable, inject } from 'tsyringe';
 import {
   CommunicationHostServiceBase,
@@ -121,8 +16,9 @@ export class AuthService {
 
   public startAuthServer(): void {
     if (this.isRunning) return;
+    console.log('overwolf', overwolf);
 
-    const webserver = (overwolf.web as any)?.webserver;
+    const webserver = (overwolf.web as any)?.web;
 
     if (!webserver) {
       console.error('❌ Overwolf webserver API not available');
@@ -140,6 +36,60 @@ export class AuthService {
 
     this.listen();
   }
+
+  // public startAuthServer(): void {
+  //   if (this.isRunning) return;
+
+  //   const web = (overwolf as any)?.web;
+
+  //   if (!web?.createServer) {
+  //     console.error('❌ Overwolf createServer API not available');
+  //     return;
+  //   }
+
+  //   const server = web.createServer(this.port, (res: any) => {
+  //     if (res?.success) {
+  //       this.isRunning = true;
+  //       console.log(`✅ Auth server running on http://127.0.0.1:${this.port}`);
+  //     } else {
+  //       console.error('❌ Server failed:', res?.error);
+  //     }
+  //   });
+
+  //   server.onRequest.addListener((req: any) => {
+  //     try {
+  //       const fullUrl = `http://127.0.0.1${req.url}`;
+  //       const url = new URL(fullUrl);
+
+  //       if (url.pathname === '/auth/google/callback') {
+  //         const accessToken = url.searchParams.get('accessToken');
+  //         const refreshToken = url.searchParams.get('refreshToken');
+
+  //         if (!accessToken) {
+  //           req.respond({ status: 400, body: 'Missing accessToken' });
+  //           return;
+  //         }
+
+  //         this.communicationBus.sendMessage('desktop', {
+  //           type: 'AUTH_SUCCESS',
+  //           payload: { accessToken, refreshToken },
+  //         });
+
+  //         req.respond({
+  //           status: 200,
+  //           body: 'Auth success received. You can close this tab.',
+  //         });
+
+  //         return;
+  //       }
+
+  //       req.respond({ status: 200, body: 'OK' });
+  //     } catch (err) {
+  //       console.error('❌ Auth callback error:', err);
+  //       req.respond({ status: 500, body: 'Internal server error' });
+  //     }
+  //   });
+  // }
 
   private listen(): void {
     const webserver = (overwolf.web as any)?.webserver;
