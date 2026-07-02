@@ -7,10 +7,14 @@ import { SignupPage } from '../pages/SignupPage';
 import {
   loginWithCredentials,
   registerWithCredentials,
+  sendForgotPasswordEmail,
 } from '../../shared/api';
 import { tokenStorage } from '../../lib/tokenStorage';
 import { PremiumContent } from '../pages/PremiumContent';
 import ComingSoonPage from '../pages/shared/CommingSoonPage';
+import { ForgotPassword } from '../pages/ForgotPassword';
+import { PrivacyPage } from '../pages/PrivacyPage';
+import { TermsPage } from '../pages/TermsPage';
 
 interface RouterProps {
   currentRoute: string;
@@ -51,6 +55,7 @@ export const Router: React.FC<RouterProps> = ({
     email: string;
     password: string;
     authType: string;
+    acceptedTerms: boolean;
   }) => {
     try {
       const response = await registerWithCredentials({
@@ -58,6 +63,7 @@ export const Router: React.FC<RouterProps> = ({
         email: credentials.email,
         password: credentials.password,
         authType: credentials.authType,
+        acceptedTerms: credentials.acceptedTerms
       });
 
       if (response.accessToken && response.refreshToken) {
@@ -146,8 +152,13 @@ export const Router: React.FC<RouterProps> = ({
     }
   };
 
-  const handleForgotPassword = () => {
-    console.log('Forgot password button clicked');
+  const handleForgotPasswordRequest = async (email: string) => {
+    try {
+      await sendForgotPasswordEmail(email);
+    } catch (error) {
+      console.error('Forgot password failed:', error);
+      throw error;
+    }
   };
 
   const renderPage = (): ReactNode => {
@@ -171,6 +182,13 @@ export const Router: React.FC<RouterProps> = ({
             description="Custom challenges are under development."
           />
         );
+      case 'forgot-password':
+        return (
+          <ForgotPassword
+            onBackToLogin={() => onNavigate('login')}
+            onSendResetLink={handleForgotPasswordRequest}
+          />
+        );
       case 'premiumContent':
         return <PremiumContent />;
       case 'profile':
@@ -188,7 +206,7 @@ export const Router: React.FC<RouterProps> = ({
             onGoogleLogin={handleGoogleLogin}
             onSwitchMode={() => onNavigate('register')}
             onLogin={handleLogin}
-            onForgotPassword={handleForgotPassword}
+            onForgotPassword={() => onNavigate('forgot-password')}
           />
         );
       case 'register':
@@ -197,8 +215,16 @@ export const Router: React.FC<RouterProps> = ({
             onGoogleSignup={handleGoogleSignup}
             onSwitchMode={() => onNavigate('login')}
             onRegister={handleRegister}
+            onOpenTerms={() => onNavigate('terms')}
+            onOpenPrivacy={() => onNavigate('privacy')}
           />
         );
+
+      case 'privacy':
+        return <PrivacyPage onBack={() => onNavigate('register')} />;
+
+      case 'terms':
+        return <TermsPage onBack={() => onNavigate('register')} />;
       default:
         return <div>Page not found</div>;
     }

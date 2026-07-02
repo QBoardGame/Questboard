@@ -8,13 +8,18 @@ type SignupPageProps = {
     email: string;
     password: string;
     authType: string;
+    acceptedTerms: boolean;
   }) => Promise<void>;
+  onOpenTerms: () => void;
+  onOpenPrivacy: () => void;
 };
 
 export const SignupPage = ({
   onGoogleSignup,
   onSwitchMode,
   onRegister,
+  onOpenTerms,
+  onOpenPrivacy,
 }: SignupPageProps) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -22,6 +27,7 @@ export const SignupPage = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,6 +65,13 @@ export const SignupPage = ({
       return;
     }
 
+    if (!acceptedTerms) {
+      setError(
+        'Please read and accept the Terms of Service and Privacy Policy.',
+      );
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -67,6 +80,7 @@ export const SignupPage = ({
         email,
         password,
         authType: 'EMAIL',
+        acceptedTerms,
       });
     } catch {
       setError(
@@ -84,9 +98,9 @@ export const SignupPage = ({
           <h1 className="text-3xl font-semibold tracking-tight text-white">
             Create your account
           </h1>
-          <p className="text-sm text-slate-400">
+          {/* <p className="text-sm text-slate-400">
             Register with your details or continue with Google to get started.
-          </p>
+          </p> */}
         </header>
 
         <form className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
@@ -188,6 +202,35 @@ export const SignupPage = ({
                 )}
               </button>
             </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <input
+              id="terms"
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-slate-600 bg-slate-900 text-sky-500 focus:ring-sky-500"
+            />
+            <label htmlFor="terms" className="text-sm leading-6 text-slate-400">
+              I have read and accept the{' '}
+              <button
+                type="button"
+                onClick={onOpenTerms}
+                className="font-medium text-sky-400 underline transition hover:text-sky-300"
+              >
+                Terms of Service
+              </button>{' '}
+              and{' '}
+              <button
+                type="button"
+                onClick={onOpenPrivacy}
+                className="font-medium text-sky-400 underline transition hover:text-sky-300"
+              >
+                Privacy Policy
+              </button>
+              .
+            </label>
           </div>
 
           {error && (

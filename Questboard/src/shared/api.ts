@@ -39,6 +39,7 @@ export type SignupCredentials = {
   email: string;
   password: string;
   authType: string;
+  acceptedTerms: boolean;
 };
 
 export async function loginWithCredentials(credentials: LoginCredentials) {
@@ -108,4 +109,11 @@ export async function fetchUserProfile(): Promise<UserProfile> {
   return Object.fromEntries(
     Object.entries(profile).filter(([, value]) => value !== undefined),
   ) as UserProfile;
+
+}
+
+export async function sendForgotPasswordEmail(email: string) {
+  return apiClient.post('/auth/forgot-password', {
+    email,
+  });
 }

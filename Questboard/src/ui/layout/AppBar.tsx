@@ -74,7 +74,7 @@ const AppBarComponent: React.FC = () => {
           WebkitTextFillColor: 'transparent',
         }}
       >
-        AURUM
+        RuneRush
       </div>
 
       {/* ACTIONS */}

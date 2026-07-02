@@ -14,10 +14,10 @@ export const Dashboard: React.FC<DashboardProps> = () => {
           boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
         }}
       >
-        <h2 className="text-3xl font-bold text-white">Welcome to AURUM</h2>
+        <h2 className="text-3xl font-bold text-white">Welcome to RuneRush</h2>
 
         <p className="mt-3 max-w-2xl text-slate-400">
-          Complete in-game challenges, earn coins, and unlock rewards while
+          Complete in-game challenges, earn Rune, and unlock rewards while
           playing your favorite games.
         </p>
 

@@ -1,63 +1,54 @@
-html,
-/* body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  background: #0f1115;
+html {
   scroll-behavior: smooth;
-} */
+  scrollbar-width: thin;
+  scrollbar-color: #22c55e #151824;
+}
 
 body,
 #app {
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow: hidden; /* remove browser page scrollbar */
+  min-height: 100%;
   background: #0f1115;
 }
 
-
-#app {
-  height: 100vh;
-}
-
-
-/* MAIN APP SCROLLBAR */
-
-.app-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #22c55e #151824;
+/* Remove this if you want normal page scrolling */
+/* overflow: hidden prevents global scrollbar */
+body {
   overflow-y: auto;
 }
 
 
-/* Chrome / Edge / WebView */
+/* GLOBAL CUSTOM SCROLLBAR */
+/* Chrome / Edge / WebView / Electron */
 
-.app-scroll::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-.app-scroll::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: #151824;
 }
 
-.app-scroll::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: #22c55e;
   border-radius: 999px;
   border: 2px solid #151824;
 }
 
-.app-scroll::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: #4ade80;
 }
 
 
+/* Smooth scrolling for scroll containers also */
+* {
+  scroll-behavior: smooth;
+}
 
-/* remove old scrollbar targets */
-/* .games-scroll {} */
 
-
+/* Loading animation */
 @keyframes loading {
   0% {
     width: 0%;
